@@ -11,9 +11,9 @@ public class activateOwnerCamera : NetworkBehaviour
     {
         if (IsOwner)
         {
-            //cam.SetActive(true);
-            GameObject camera = Instantiate(cam);
-            cam.GetComponent<CinemachineVirtualCamera>().Follow = transform;
+            cam.SetActive(true);
+            // GameObject camera = Instantiate(cam);
+            // cam.GetComponent<CinemachineVirtualCamera>().Follow = transform;
         }
     }
 }
