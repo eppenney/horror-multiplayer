@@ -11,18 +11,20 @@ public class MovementInput : NetworkBehaviour
     private float runSpeed = 15f;
     private bool isRunning = false;
     [SerializeField]
-    private float jumpPower = 5f;
+    private float jumpPower = 1f;
     [SerializeField]
-    private float gravity = 0.5f;
+    private float gravity = 0.01f;
+    [SerializeField]
+    float terminalVelocity = -2.0f;
     private float jumpVelocity = 0f;
     [SerializeField]
     private float crouchSpeed = 5f;
     private bool isCrouching = false;
     [SerializeField]
-    private float turnSensitivity = 2.0f;
+    private float turnSensitivity = 5.0f;
     private CharacterController controller;
 
-    private float dX, dY;
+    private float dX, dZ;
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +37,7 @@ public class MovementInput : NetworkBehaviour
         if (IsOwner)
         {
             Debug.Log("This client owns the player object.");
+            Cursor.lockState = CursorLockMode.Locked;
         }
         else
         {
@@ -61,7 +64,7 @@ public class MovementInput : NetworkBehaviour
         if (Input.GetButtonDown("Run")) {
             isRunning = true;
         } 
-        if (Inputs.GetButtonUp("Run")) {
+        if (Input.GetButtonUp("Run")) {
             isRunning = false;
         }
 
@@ -69,20 +72,20 @@ public class MovementInput : NetworkBehaviour
         if (Input.GetButtonDown("Crouch")) {
             isCrouching = true;
         } 
-        if (Inputs.GetButtonUp("Crouch")) {
+        if (Input.GetButtonUp("Crouch")) {
             isCrouching = false;
         }
     }
 
     void Move() {
         // Move, modified by crouching or running 
+        Vector3 direction; 
         if (isCrouching) {
-            Vector3 direction = new Vector3(dX, jumpVelocity, dZ) * crouchSpeed * Time.deltaTime;
-        }
-        else if (IsRunning) {
-            Vector3 direction = new Vector3(dX, jumpVelocity, dZ) * runSpeed * Time.deltaTime;
+            direction = (transform.right * dX + transform.up * jumpVelocity + transform.forward * dZ)  * crouchSpeed * Time.deltaTime;
+        } else if (isRunning) {
+            direction = (transform.right * dX + transform.up * jumpVelocity + transform.forward * dZ)  * runSpeed * Time.deltaTime;
         } else {
-            Vector3 direction = new Vector3(dX, jumpVelocity, dZ) * speed * Time.deltaTime;
+            direction = (transform.right * dX + transform.up * jumpVelocity + transform.forward * dZ)  * speed * Time.deltaTime;
         }
 
         controller.Move(direction);
@@ -91,7 +94,7 @@ public class MovementInput : NetworkBehaviour
     void Jump() {
         if (controller.isGrounded) {
             jumpVelocity = 0;
-        } else {
+        } else if (jumpVelocity > terminalVelocity) {
             jumpVelocity -= gravity;
         }
 
@@ -103,7 +106,7 @@ public class MovementInput : NetworkBehaviour
     void Turn() {
         // Rotation
         dX = Input.GetAxis("Mouse X");
-        var rotationY = dX * turnSensitivity * Time.deltaTime;
+        var rotationY = dX * turnSensitivity * Time.deltaTime * 100.0f;
         transform.Rotate(new Vector3(0.0f, rotationY, 0.0f));
     }
 }
