@@ -3,8 +3,14 @@ using UnityEngine;
 public interface IInteractable
 {
     // Method to be called for primary interaction (e.g., opening a door)
-    void PrimaryUse();
+    void PrimaryUseDown();
+
+    void PrimaryUseUp();
 
     // Method to be called for secondary interaction (e.g., grabbing a door)
-    void SecondaryUse();
+    void SecondaryUseDown();
+
+    void SecondaryUseUp();
+
+    void ToolTip();
 }

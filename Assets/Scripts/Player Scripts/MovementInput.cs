@@ -16,13 +16,14 @@ public class MovementInput : NetworkBehaviour
     private float gravity = 0.01f;
     [SerializeField]
     float terminalVelocity = -2.0f;
-    private float jumpVelocity = 0f;
+    private float yVelocity = 0f;
     [SerializeField]
     private float crouchSpeed = 5f;
     private bool isCrouching = false;
     [SerializeField]
     private float turnSensitivity = 5.0f;
     private CharacterController controller;
+
 
     private float dX, dZ;
     // Start is called before the first frame update
@@ -81,11 +82,11 @@ public class MovementInput : NetworkBehaviour
         // Move, modified by crouching or running 
         Vector3 direction; 
         if (isCrouching) {
-            direction = (transform.right * dX + transform.up * jumpVelocity + transform.forward * dZ)  * crouchSpeed * Time.deltaTime;
+            direction = (transform.right * dX + transform.up * yVelocity + transform.forward * dZ)  * crouchSpeed * Time.deltaTime;
         } else if (isRunning) {
-            direction = (transform.right * dX + transform.up * jumpVelocity + transform.forward * dZ)  * runSpeed * Time.deltaTime;
+            direction = (transform.right * dX + transform.up * yVelocity + transform.forward * dZ)  * runSpeed * Time.deltaTime;
         } else {
-            direction = (transform.right * dX + transform.up * jumpVelocity + transform.forward * dZ)  * speed * Time.deltaTime;
+            direction = (transform.right * dX + transform.up * yVelocity + transform.forward * dZ)  * speed * Time.deltaTime;
         }
 
         controller.Move(direction);
@@ -93,13 +94,13 @@ public class MovementInput : NetworkBehaviour
 
     void Jump() {
         if (controller.isGrounded) {
-            jumpVelocity = 0;
-        } else if (jumpVelocity > terminalVelocity) {
-            jumpVelocity -= gravity;
+            yVelocity = -0.1f * Time.deltaTime; // Small amount of gravity to correct isGrounded? Can also try setting min move distance -> 0
+        } else if (yVelocity > terminalVelocity) {
+            yVelocity -= gravity;
         }
 
         if (Input.GetButtonDown("Jump") && controller.isGrounded) {
-            jumpVelocity = jumpPower;
+            yVelocity = jumpPower;
         }
     }
 
