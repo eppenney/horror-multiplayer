@@ -6,23 +6,31 @@ public class cameraControl : NetworkBehaviour
 {
     [SerializeField]
     private GameObject cam;
+    private GameObject camera;
     [SerializeField]
     private Vector3 leanOffset;
     [SerializeField]
-    private float leanSpeed;
+    private float leanThreshold = 0.05f;
+    private Vector3 originalPosition;
+    [SerializeField]
+    private float leanSpeed = 5.0f;
     [SerializeField]
     private Vector3 turnAngle;
     [SerializeField]
-    private float turnSpeed;
-
-
+    private float turnSpeed = 5.0f;
+    [SerializeField]
+    private float turnThreshold = 0.05f;
+    private CinemachineCameraOffset cinemachineCameraOffset;
     private bool isLeaningLeft, isLeaningRight, isTurning;
+
     // Start is called before the first frame update
     public override void OnNetworkSpawn()
     {
         if (!IsOwner) { return; }
-        var camera = Instantiate(cam);
+        camera = Instantiate(cam);
         camera.GetComponent<CinemachineVirtualCamera>().Follow = transform;
+        cinemachineCameraOffset = camera.GetComponent<CinemachineCameraOffset>();
+        originalPosition = camera.transform.position;
     }
 
     void Update() {
@@ -33,33 +41,27 @@ public class cameraControl : NetworkBehaviour
     }
     
     void Lean() {
-        if ((isLeaningLeft && isLeaningRight || !(isLeaningLeft || isLeaningRight))) {
-            if (Vector3.Distance(cam.transform.position, originalPosition) < 0.5f) {
-                cam.transform.position = originalPosition;
+        if (((isLeaningLeft && isLeaningRight) || !(isLeaningLeft || isLeaningRight))) {
+            if (Vector3.Distance(cinemachineCameraOffset.m_Offset, originalPosition) < leanThreshold) {
+                cinemachineCameraOffset.m_Offset = originalPosition;
             } else {
-                cam.transform.position = Vector3.Lerp(cam.transform.position, originalPosition, leanSpeed * Time.deltaTime);
+                cinemachineCameraOffset.m_Offset = Vector3.Lerp(cinemachineCameraOffset.m_Offset, originalPosition, leanSpeed * Time.deltaTime);
             }
         }else if (isLeaningLeft) {
-            if (Vector3.Distance(cam.transform.position, new Vector3(-leanOffset.x, leanOffset.y, leanOffset.z)) < 0.5f) {
-                cam.transform.position = new Vector3(-leanOffset.x, leanOffset.y, leanOffset.z);
-            } else {
-                cam.transform.position = Vector3.Lerp(cam.transform.position, new Vector3(-leanOffset.x, leanOffset.y, leanOffset.z), leanSpeed * Time.deltaTime);
-            }
+            cinemachineCameraOffset.m_Offset = Vector3.Lerp(cinemachineCameraOffset.m_Offset, new Vector3(-leanOffset.x, cinemachineCameraOffset.m_Offset.y, cinemachineCameraOffset.m_Offset.z), leanSpeed * Time.deltaTime);
         }else if (isLeaningRight) {
-            if (Vector3.Distance(cam.transform.position, new Vector3(leanOffset.x, leanOffset.y, leanOffset.z)) < 0.5f) {
-                cam.transform.position = new Vector3(leanOffset.x, leanOffset.y, leanOffset.z);
-            } else {
-                cam.transform.position = Vector3.Lerp(cam.transform.position, new Vector3(leanOffset.x, leanOffset.y, leanOffset.z), leanSpeed * Time.deltaTime);
-            }
+            cinemachineCameraOffset.m_Offset = Vector3.Lerp(cinemachineCameraOffset.m_Offset, new Vector3(leanOffset.x, cinemachineCameraOffset.m_Offset.y, cinemachineCameraOffset.m_Offset.z), leanSpeed * Time.deltaTime);
         }
     }
 
     void Turn() {
         if (isTurning)
         {
-            Quaternion targetRotation = Quaternion.Euler(turnAngle);
-
-            cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
+            Quaternion targetRotation = Quaternion.Euler(new Vector3(camera.transform.rotation.x, turnAngle.y, camera.transform.rotation.x));
+            camera.transform.rotation = Quaternion.Slerp(camera.transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
+        } else {
+            Quaternion targetRotation = Quaternion.Euler(new Vector3(camera.transform.rotation.x, 0.0f, camera.transform.rotation.x));
+            camera.transform.rotation = Quaternion.Slerp(camera.transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
         }
     }
 

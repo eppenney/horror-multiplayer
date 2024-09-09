@@ -25,21 +25,22 @@ public class EnvironmentInteraction : NetworkBehaviour
     }
 
     void Primary() {
-        if (target) {
+        if (target != null) {
             target.PrimaryUseDown();
         }
     }
 
     void Secondary() {
-        if (target) {
+        if (target != null) {
             target.SecondaryUseDown();
         }
     }
 
     void GetTarget() {
         RaycastHit hit;
-        if (Physics.Raycast(playerCam.position, playerCam.forward, interactDistance, out hit, interactableLayer)) {
-            target = hit.gameObject.GetComponent<IInteractable>();
+        Ray ray = new Ray(playerCam.position, playerCam.forward);
+        if (Physics.Raycast(ray, out hit, interactDistance, interactableLayer)) {
+            target = hit.transform.gameObject.GetComponent<IInteractable>();
         } else {
             target = null;
         }

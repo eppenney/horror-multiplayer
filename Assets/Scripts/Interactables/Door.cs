@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.Netcode;
 
 public class Door : NetworkBehaviour, IInteractable
 {
@@ -13,14 +14,16 @@ public class Door : NetworkBehaviour, IInteractable
     [SerializeField]
     private bool facingRight = true; 
     private bool grabbed = false;
-    private float position, currentPosition = 0.0f, 0.0f;
-    private Quaternion closedRotation, openRotationLeft, openRotationRight;
+    private float position, currentPosition = 0.0f;
+    private Quaternion closedRotation;
+    private Quaternion openRotationLeft;
+    private Quaternion openRotationRight;
     private Vector3 grabOffset;
 
     void Start() {
         closedRotation = transform.rotation;
         openRotationLeft = Quaternion.Euler(transform.eulerAngles + new Vector3(0, openLimitLeft, 0));
-        openRotationRight = Quaternion.Euler(transform.eulerAngles + new Vector3(0, openRotationRight, 0));
+        openRotationRight = Quaternion.Euler(transform.eulerAngles + new Vector3(0, openLimitRight, 0));
     }
     public void PrimaryUseDown()
     {
@@ -29,7 +32,7 @@ public class Door : NetworkBehaviour, IInteractable
         if (transform.rotation != closedRotation) {
             transform.rotation = closedRotation;
         } else {
-            Vector3 playerDirection = (transform.position - player.position).normalized;
+            /*Vector3 playerDirection = (transform.position - player.position).normalized;
             float dotProduct = Vector3.Dot(playerDirection, transform.forward);
 
             if (dotProduct > 0)
@@ -40,6 +43,7 @@ public class Door : NetworkBehaviour, IInteractable
             {
                 transform.rotation = openRotationRight;
             }
+            */
         }
     }
 
