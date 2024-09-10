@@ -5,23 +5,28 @@ using UnityEngine;
 
 public class MovementInput : NetworkBehaviour 
 {
-    [SerializeField]
-    private float speed = 10f;
-    [SerializeField]
-    private float runSpeed = 15f;
+    // Base Movement 
+    [SerializeField] private float speed = 10f;
+    [SerializeField] private float runSpeed = 15f;
     private bool isRunning = false;
-    [SerializeField]
-    private float jumpPower = 1f;
-    [SerializeField]
-    private float gravity = 0.01f;
-    [SerializeField]
-    float terminalVelocity = -2.0f;
+
+    // Jumping 
+    [SerializeField] private float jumpPower = 1f;
+    [SerializeField] private float gravity = 0.01f;
+    [SerializeField] float terminalVelocity = -2.0f;
     private float yVelocity = 0f;
-    [SerializeField]
-    private float crouchSpeed = 5f;
+
+    // Crouching 
+    [SerializeField] private float crouchSpeed = 5f;
     private bool isCrouching = false;
-    [SerializeField]
-    private float turnSensitivity = 5.0f;
+
+    // Movements 
+    [SerializeField] private Transform head; 
+    [SerializeField] private float maxUpAngle = 60f; 
+    [SerializeField] private float maxDownAngle = 60f;
+    [SerializeField] private float horizontalSensitivity = 2f;     
+    [SerializeField] private float verticalSensitivity = 2f; 
+    private float verticalRotation = 0f;
     private CharacterController controller;
 
 
@@ -106,8 +111,17 @@ public class MovementInput : NetworkBehaviour
 
     void Turn() {
         // Rotation
-        dX = Input.GetAxis("Mouse X");
-        var rotationY = dX * turnSensitivity * Time.deltaTime * 100.0f;
-        transform.Rotate(new Vector3(0.0f, rotationY, 0.0f));
+        float mouseX = Input.GetAxis("Mouse X");
+        float mouseY = Input.GetAxis("Mouse Y");
+
+        // Rotate the character left and right
+        transform.Rotate(Vector3.up * mouseX * horizontalSensitivity);
+
+        // Calculate vertical rotation and clamp it
+        verticalRotation -= mouseY * verticalSensitivity;
+        verticalRotation = Mathf.Clamp(verticalRotation, -maxDownAngle, maxUpAngle);
+
+        // Apply vertical rotation to the head
+        head.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
     }
 }
