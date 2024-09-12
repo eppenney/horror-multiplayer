@@ -35,6 +35,9 @@ public class MovementInput : NetworkBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
+        if (head == null) {
+            head = GetComponent<cameraControl>().GetCamera().transform;
+        }
     }
 
     public override void OnNetworkSpawn()
@@ -122,6 +125,6 @@ public class MovementInput : NetworkBehaviour
         verticalRotation = Mathf.Clamp(verticalRotation, -maxDownAngle, maxUpAngle);
 
         // Apply vertical rotation to the head
-        head.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
+        head.localRotation = Quaternion.Euler(new Vector3(verticalRotation, head.localRotation.eulerAngles.y, head.localRotation.eulerAngles.z));
     }
 }

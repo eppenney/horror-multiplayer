@@ -6,12 +6,12 @@ public class SoundSource : MonoBehaviour {
     public void EmitSound() {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius);
 
-        foreach (var hit in hitCollders) {
+        foreach (var hit in hitColliders) {
             SoundListener soundListener = hit.GetComponent<SoundListener>();
 
-            if (listener != null)
+            if (soundListener != null)
             {
-                listener.OnSoundHeard(transform.position, volume);
+                soundListener.OnSoundHeard(transform.position, volume);
             }
         }
     }

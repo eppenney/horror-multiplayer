@@ -32,18 +32,9 @@ public class Door : NetworkBehaviour, IInteractable
         if (transform.rotation != closedRotation) {
             transform.rotation = closedRotation;
         } else {
-            /*Vector3 playerDirection = (transform.position - player.position).normalized;
-            float dotProduct = Vector3.Dot(playerDirection, transform.forward);
-
-            if (dotProduct > 0)
-            {
-                transform.rotation = openRotationLeft;
-            }
-            else
-            {
-                transform.rotation = openRotationRight;
-            }
-            */
+            
+            transform.rotation = openRotationLeft;
+            
         }
     }
 

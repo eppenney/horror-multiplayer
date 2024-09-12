@@ -10,7 +10,7 @@ public class Sight : MonoBehaviour {
         List<Transform> visibleTargets = new List<Transform>();
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, detectionLayers);
 
-        foreach (var hit in hitCollders) {
+        foreach (var hit in hitColliders) {
             Vector3 direction = (hit.transform.position - transform.position).normalized;
 
             float dotProduct = Vector3.Dot(transform.forward, direction);

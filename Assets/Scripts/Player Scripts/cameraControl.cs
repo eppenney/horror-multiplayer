@@ -22,15 +22,22 @@ public class cameraControl : NetworkBehaviour
     private float turnThreshold = 0.05f;
     private CinemachineCameraOffset cinemachineCameraOffset;
     private bool isLeaningLeft, isLeaningRight, isTurning;
+    float currentYRotation = 0.0f;
 
     // Start is called before the first frame update
     public override void OnNetworkSpawn()
     {
         if (!IsOwner) { return; }
         camera = Instantiate(cam);
+        camera.transform.SetParent(transform);
+        camera = camera.transform.GetChild(0).gameObject;
         camera.GetComponent<CinemachineVirtualCamera>().Follow = transform;
         cinemachineCameraOffset = camera.GetComponent<CinemachineCameraOffset>();
         originalPosition = camera.transform.position;
+    }
+
+    public GameObject GetCamera() {
+        return camera; 
     }
 
     void Update() {
@@ -55,15 +62,36 @@ public class cameraControl : NetworkBehaviour
     }
 
     void Turn() {
+        /*
         if (isTurning)
         {
-            Quaternion targetRotation = Quaternion.Euler(new Vector3(camera.transform.rotation.x, turnAngle.y, camera.transform.rotation.x));
-            camera.transform.rotation = Quaternion.Slerp(camera.transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
+            Quaternion targetRotation = Quaternion.Euler(new Vector3(camera.transform.localRotation.x, turnAngle.y, camera.transform.localRotation.x));
+            if (camera.transform.localRotation.y < turnAngle.y){
+                // camera.transform.localRotation = Quaternion.Slerp(camera.transform.localRotation, targetRotation, turnSpeed * Time.deltaTime);
+                camera.transform.localRotation = Quaternion.Euler(new Vector3(camera.transform.localRotation.x, camera.transform.localRotation.y + turnSpeed, camera.transform.localRotation.z));
+            }
         } else {
-            Quaternion targetRotation = Quaternion.Euler(new Vector3(camera.transform.rotation.x, 0.0f, camera.transform.rotation.x));
-            camera.transform.rotation = Quaternion.Slerp(camera.transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
+            Quaternion targetRotation = Quaternion.Euler(new Vector3(camera.transform.localRotation.x, 0.0f, camera.transform.localRotation.x));
+            if (Quaternion.Angle(camera.transform.rotation, targetRotation) > turnThreshold)
+            {
+                //camera.transform.localRotation = Quaternion.Slerp(camera.transform.localRotation, targetRotation, turnSpeed * Time.deltaTime);
+                camera.transform.localRotation = Quaternion.Euler(new Vector3(camera.transform.localRotation.x, camera.transform.localRotation.y - turnSpeed * Time.deltaTime, camera.transform.localRotation.z));
+            }
         }
-    }
+        */
+        float targetYRotation = isTurning ? turnAngle.y : 0.0f;
+        float rotationDifference = Mathf.Abs(currentYRotation - targetYRotation);
+
+        if (rotationDifference > turnThreshold)
+        {
+            // Smoothly interpolate the current Y rotation towards the target using Lerp
+            currentYRotation = Mathf.Lerp(currentYRotation, targetYRotation, turnSpeed * Time.deltaTime);
+        }
+
+        // Apply the new Y rotation while keeping the X and Z rotations unchanged
+        Quaternion targetRotation = Quaternion.Euler(camera.transform.localRotation.eulerAngles.x, currentYRotation, camera.transform.localRotation.eulerAngles.z);
+        camera.transform.localRotation = targetRotation;
+        }
 
     void Inputs() {
         // Leaning Input

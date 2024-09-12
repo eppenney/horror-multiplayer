@@ -1,23 +1,22 @@
-using UnityEngine 
+using UnityEngine;
 
 public class Navigation : MonoBehaviour {
-    [RequireComponent(typeof(NavMeshAgent))]
-    private NavMeshAgent agent;
+    private UnityEngine.AI.NavMeshAgent agent;
 
     void Start() {
-        agent = GetComponent<NavMeshAgent>();
+        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
     }
 
     public int MoveToPosition(Vector3 targetPosition) {
-        var path = new NavMeshPath();
+        var path = new UnityEngine.AI.NavMeshPath();
         agent.CalculatePath(targetPosition, path);
         switch (path.status)
         {
-            case NavMeshPathStatus.PathComplete:
+            case UnityEngine.AI.NavMeshPathStatus.PathComplete:
                 Debug.Log($"{agent.name} moving to target.");
                 agent.SetPath(path);
                 return 1;
-            case NavMeshPathStatus.PathPartial:
+            case UnityEngine.AI.NavMeshPathStatus.PathPartial:
                 Debug.LogWarning($"{agent.name} moving partway to target.");
                 agent.SetPath(path);
                 return 0;
@@ -28,14 +27,14 @@ public class Navigation : MonoBehaviour {
     }
 
     public int CheckPosition(Vector3 targetPosition) {
-        var path = new NavMeshPath();
+        var path = new UnityEngine.AI.NavMeshPath();
         agent.CalculatePath(targetPosition, path);
         switch (path.status)
         {
-            case NavMeshPathStatus.PathComplete:
+            case UnityEngine.AI.NavMeshPathStatus.PathComplete:
                 Debug.Log($"{agent.name} will be able to reach target.");
                 return 1;
-            case NavMeshPathStatus.PathPartial:
+            case UnityEngine.AI.NavMeshPathStatus.PathPartial:
                 Debug.LogWarning($"{agent.name} will only be able to move partway to target.");
                 return 0;
             default:

@@ -15,17 +15,17 @@ public class EnvironmentInteraction : NetworkBehaviour
     private IInteractable target;
     public override void OnNetworkSpawn()
     {
-        
+        playerCam = Camera.main.transform;// GetComponent<cameraControl>().GetCamera().transform;
     }
 
     void Update() {
         if (!IsOwner) { return; }
-        GetTarget();
         Inputs();
     }
 
     void Primary() {
         if (target != null) {
+            Debug.Log("Primary Use Activated");
             target.PrimaryUseDown();
         }
     }
@@ -39,7 +39,9 @@ public class EnvironmentInteraction : NetworkBehaviour
     void GetTarget() {
         RaycastHit hit;
         Ray ray = new Ray(playerCam.position, playerCam.forward);
+        Debug.Log("Ray Sent");
         if (Physics.Raycast(ray, out hit, interactDistance, interactableLayer)) {
+            Debug.Log("Target hit");
             target = hit.transform.gameObject.GetComponent<IInteractable>();
         } else {
             target = null;
@@ -48,9 +50,11 @@ public class EnvironmentInteraction : NetworkBehaviour
 
     void Inputs() {
         if (Input.GetButtonDown("Interact")) {
+            GetTarget();
             Primary();
         }
         if (Input.GetButtonDown("Fire2")) {
+            GetTarget();
             Secondary();
         }
         if (Input.GetButtonUp("Fire1") && target != null) {

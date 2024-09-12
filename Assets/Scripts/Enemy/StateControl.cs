@@ -15,16 +15,13 @@ public class StateControl : MonoBehaviour {
 
     public EnemyState state = EnemyState.Waiting;
 
-    [[RequireComponent(typeof(Navigation))]] 
     private Navigation nav;
-
-    [[RequireComponent(typeof(Sight))]] 
     private Sight sight;
 
 
     void Start() {
         nav = GetComponent<Navigation>();
-        sight = GetComponent<sight>();
+        sight = GetComponent<Sight>();
     }
 
     void Update() {
