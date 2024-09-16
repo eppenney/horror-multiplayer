@@ -46,7 +46,7 @@ public class MovementInput : NetworkBehaviour
         if (IsOwner)
         {
             Debug.Log("This client owns the player object.");
-            Cursor.lockState = CursorLockMode.Locked;
+            // Cursor.lockState = CursorLockMode.Locked;
         }
         else
         {

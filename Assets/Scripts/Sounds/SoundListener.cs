@@ -1,11 +1,14 @@
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
+using Unity.Netcode;
 
-public class SoundListener : MonoBehaviour {
+
+public class SoundListener : NetworkBehaviour  {
     [SerializeField] private List<UnityEvent> soundEvents = new List<UnityEvent>();
     public void OnSoundHeard(Vector3 soundPosition, float volume = 1.0f)
     {
+        if (!IsServer) return;
         ReactToSound();
     }
 
