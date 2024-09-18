@@ -15,7 +15,7 @@ public class SoundSource : NetworkBehaviour {
 
             if (soundListener != null)
             {
-                soundListener.OnSoundHeard(transform.position, volume);
+                soundListener.OnSoundHeard(transform, volume);
             }
         }
     }

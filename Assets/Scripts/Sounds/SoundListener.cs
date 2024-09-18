@@ -3,21 +3,30 @@ using UnityEngine.Events;
 using System.Collections.Generic;
 using Unity.Netcode;
 
+[System.Serializable]
+public class SoundEvent : UnityEvent<GameObject, float> { }
 
 public class SoundListener : NetworkBehaviour  {
-    [SerializeField] private List<UnityEvent> soundEvents = new List<UnityEvent>();
-    public void OnSoundHeard(Vector3 soundPosition, float volume = 1.0f)
+    [SerializeField] private List<SoundEvent> soundEvents = new List<UnityEvent>();
+    public void OnSoundHeard(Transform source, float volume = 1.0f)
     {
         if (!IsServer) return;
-        ReactToSound();
+        ReactToSound(source, volume);
     }
 
-    private void ReactToSound()
+    private void ReactToSound(Transform source, float volume)
     {
         Debug.Log("Sound heard! Reacting...");
         foreach (var soundEvent in soundEvents)
         {
-            soundEvent.Invoke();
+            try
+            {
+                soundEvent.Invoke(source, volume);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"Error invoking sound event: {ex.Message}");
+            }
         }
     }
 } 
