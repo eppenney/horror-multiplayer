@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Collections.Generic;
 /* 
 I'm thinking maintain 4 "targets"
 Wandering -> Hear/See Target -> Investigate -> Searching / Hunting / Wandering
@@ -28,8 +28,6 @@ public class TargetInfo
     public Vector3 position;     // To store the position
     public float volume;         // To store the volume
     public bool seen;
-    public float agroTime = 5.0f;
-    private float agroTimer = 0.0f;
 
     // Constructor
     public TargetInfo(Transform transform, Vector3 position, float volume, bool seen = false)
@@ -43,10 +41,13 @@ public class TargetInfo
 
 public class StateControl : MonoBehaviour {
 
-    public EnemyState state = EnemyState.Waiting;
+    public EnemyState state = EnemyState.Wandering;
 
     public List<TargetInfo> targetList;
     TargetInfo target;
+
+    public float agroTime = 5.0f;
+    private float agroTimer = 0.0f;
 
     private Navigation nav;
     private Sight sight;
@@ -56,7 +57,7 @@ public class StateControl : MonoBehaviour {
         nav = GetComponent<Navigation>();
         sight = GetComponent<Sight>();
 
-        targetList = new List<transform>();
+        targetList = new List<TargetInfo>();
     }
 
     void Update() {
@@ -90,23 +91,30 @@ public class StateControl : MonoBehaviour {
     }
 
     public void ChangeState(EnemyState p_state) {
-        switch (state)
+        switch (p_state)
         {
             case EnemyState.Wandering:
+                Debug.Log("Enemy is Wandering");
                 break;
             case EnemyState.Investigating:
+                Debug.Log("Enemy is Investigating");
                 nav.MoveToPosition(target.position);
                 break;
             case EnemyState.Searching:
+                Debug.Log("Enemy is Searching");
                 break;
             case EnemyState.Hunting:
+                Debug.Log("Enemy is Hunting");
                 nav.MoveToPosition(target.position);
                 break;
             case EnemyState.Fleeing:
+                Debug.Log("Enemy is Fleeing");
                 break;
             case EnemyState.Waiting:
+                Debug.Log("Enemy is Waiting");
                 break;
             case EnemyState.Following:
+                Debug.Log("Enemy is Following");
                 break;
             default:
                 Debug.LogWarning("Unhandled state: " + state);
@@ -118,44 +126,33 @@ public class StateControl : MonoBehaviour {
 
     private void WanderingState()
     {
-        // Dummy function for Wandering state
-        Debug.Log("Enemy is Wandering");
         TargetInfo newTarget = SeePlayer();
-        if (newTarget !== null) {
+        if (newTarget != null) {
             target = newTarget;
             ChangeState(EnemyState.Hunting);    
         }
-        // Add logic for wandering behavior here
     }
 
     private void InvestigatingState()
     {
-        // Dummy function for Investigating state
-        Debug.Log("Enemy is Investigating");
         TargetInfo newTarget = SeePlayer();
-        if (newTarget !== null) {
+        if (newTarget != null) {
             target = newTarget;
             ChangeState(EnemyState.Hunting);    
         }
-        // Add logic for investigating behavior here
     }
 
     private void SearchingState()
     {
-        // Dummy function for Searching state
-        Debug.Log("Enemy is Searching");
         TargetInfo newTarget = SeePlayer();
-        if (newTarget !== null) {
+        if (newTarget != null) {
             target = newTarget;
             ChangeState(EnemyState.Hunting);    
         }
-        // Add logic for searching behavior here
     }
 
     private void HuntingState()
     {
-        // Dummy function for Hunting state
-        Debug.Log("Enemy is Hunting");
         agroTimer += Time.deltaTime; 
         if (SeePlayer() == target) {
             agroTimer = 0.0f;
@@ -163,32 +160,25 @@ public class StateControl : MonoBehaviour {
         if (agroTimer > agroTime) {
             ChangeState(EnemyState.Searching);
         }
-        // Add logic for hunting behavior here
-        // If not in GetVisibleTargets for x time, switch to Searching 
     }
 
     private void FleeingState()
     {
         // Dummy function for Fleeing state
-        Debug.Log("Enemy is Fleeing");
-        // Add logic for fleeing behavior here
     }
 
     private void WaitingState()
     {
         // Dummy function for Waiting state
-        Debug.Log("Enemy is Waiting");
-        // Add logic for waiting behavior here
     }
 
     private void FollowingState()
     {
         // Dummy function for Following state
-        Debug.Log("Enemy is Following");
-        // Add logic for following behavior here
     }
 
     public void HearSound(Transform source, float volume) {
+        Debug.Log("Enemy in state " + state + " heard sound of volume " + volume);
         switch (state)
         {
             case EnemyState.Wandering: // Investigate sound
@@ -223,8 +213,9 @@ public class StateControl : MonoBehaviour {
     }
 
     public TargetInfo SeePlayer() {
-        targetList<Transform> visible = sight.GetVisibleTargets();
+        List<Transform> visible = sight.GetVisibleTargets();
         float closestDistance = Mathf.Infinity; 
+        Transform closestTarget = null;
 
         foreach (Transform target in visible) {
             float distance = Vector3.Distance(transform.position, target.position);
