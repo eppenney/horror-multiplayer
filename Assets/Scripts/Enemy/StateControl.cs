@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.AI;
+
 /* 
 I'm thinking maintain 4 "targets"
 Wandering -> Hear/See Target -> Investigate -> Searching / Hunting / Wandering
@@ -52,6 +54,10 @@ public class StateControl : MonoBehaviour {
     private Navigation nav;
     private Sight sight;
 
+    [Header("Wander Settings")]
+    public float wanderRadius = 10f;
+    public float wanderInterval = 3f;
+    private float wanderCounter = 0.0f;
 
     void Start() {
         nav = GetComponent<Navigation>();
@@ -129,8 +135,24 @@ public class StateControl : MonoBehaviour {
         TargetInfo newTarget = SeePlayer();
         if (newTarget != null) {
             target = newTarget;
-            ChangeState(EnemyState.Hunting);    
+            ChangeState(EnemyState.Hunting);
+            return;
         }
+
+        if (wanderCounter <= 0) {
+            Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
+            randomDirection += transform.position;  // Add to current position to stay nearby
+
+            NavMeshHit hit;
+            // Sample the NavMesh to find a valid point within the radius
+            if (NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, NavMesh.AllAreas))
+            {
+                nav.MoveToPosition(hit.position);  // Move to the valid point
+            }
+            wanderCounter = wanderInterval;
+        }
+        wanderCounter -= Time.deltaTime;
+        
     }
 
     private void InvestigatingState()
@@ -150,12 +172,13 @@ public class StateControl : MonoBehaviour {
             ChangeState(EnemyState.Hunting);    
         }
     }
-
     private void HuntingState()
     {
         agroTimer += Time.deltaTime; 
-        if (SeePlayer() == target) {
+        TargetInfo new_target = SeePlayer();
+        if (new_target == target) {
             agroTimer = 0.0f;
+            target = new_target;
         }
         if (agroTimer > agroTime) {
             ChangeState(EnemyState.Searching);
@@ -231,7 +254,6 @@ public class StateControl : MonoBehaviour {
         if (closestTarget != null) {
             Debug.Log($"Closest visible target: {closestTarget.name} at distance: {closestDistance}");
             seenTarget = new TargetInfo(closestTarget, closestTarget.position, 0.0f, true);
-            ChangeState(EnemyState.Hunting);
             return seenTarget;
         }
         return seenTarget;
