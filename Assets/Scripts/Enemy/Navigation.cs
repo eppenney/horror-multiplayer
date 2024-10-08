@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class Navigation : MonoBehaviour {
-    private UnityEngine.AI.NavMeshAgent agent;
+    public UnityEngine.AI.NavMeshAgent agent;
 
     void Start() {
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();

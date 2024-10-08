@@ -56,8 +56,8 @@ public class StateControl : MonoBehaviour {
 
     [Header("Wander Settings")]
     public float wanderRadius = 10f;
-    public float wanderInterval = 3f;
-    private float wanderCounter = 0.0f;
+
+    [SerializeField] private float distanceThreshold = 0.5f;
 
     void Start() {
         nav = GetComponent<Navigation>();
@@ -139,7 +139,7 @@ public class StateControl : MonoBehaviour {
             return;
         }
 
-        if (wanderCounter <= 0) {
+        if (nav.agent.remainingDistance < distanceThreshold) {
             Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
             randomDirection += transform.position;  // Add to current position to stay nearby
 
@@ -149,10 +149,7 @@ public class StateControl : MonoBehaviour {
             {
                 nav.MoveToPosition(hit.position);  // Move to the valid point
             }
-            wanderCounter = wanderInterval;
-        }
-        wanderCounter -= Time.deltaTime;
-        
+        }        
     }
 
     private void InvestigatingState()
@@ -161,6 +158,9 @@ public class StateControl : MonoBehaviour {
         if (newTarget != null) {
             target = newTarget;
             ChangeState(EnemyState.Hunting);    
+        }
+        if (nav.agent.remainingDistance < distanceThreshold) {
+            ChangeState(EnemyState.Searching); // When you find the source of sound, search the area
         }
     }
 
@@ -171,7 +171,27 @@ public class StateControl : MonoBehaviour {
             target = newTarget;
             ChangeState(EnemyState.Hunting);    
         }
+
+        if (nav.agent.remainingDistance < distanceThreshold) 
+        {
+            // Choose a random point around the last known target position within a smaller search radius
+            Vector3 searchPoint = target.position + Random.insideUnitSphere * (wanderRadius / 2);
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(searchPoint, out hit, wanderRadius / 2, NavMesh.AllAreas))
+            {
+                nav.MoveToPosition(hit.position); // Move to the new search point
+            }
+        }
+        
+        // Transition to wandering state if search time exceeds a threshold and no target is found
+        agroTimer += Time.deltaTime;
+        if (agroTimer > agroTime)
+        {
+            agroTimer = 0.0f;
+            ChangeState(EnemyState.Wandering);
+        }
     }
+    
     private void HuntingState()
     {
         agroTimer += Time.deltaTime; 
