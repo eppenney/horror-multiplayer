@@ -396,8 +396,9 @@ MonoBehaviour:
   state: 0
   targetList: []
   agroTime: 5
+  agroTimer: 0
   wanderRadius: 10
-  wanderInterval: 3
+  distanceThreshold: 0.5
 --- !u!114 &158279348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -454,6 +455,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 976453da5dc6b464b8936d58641cbf1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 0}
 --- !u!1 &279153708
 GameObject:
   m_ObjectHideFlags: 0
@@ -3569,6 +3571,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Creep3
       objectReference: {fileID: 0}
+    - target: {fileID: 6899769094566875523, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6986170736201810022, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: -10.225895
@@ -4614,14 +4620,6 @@ PrefabInstance:
     - target: {fileID: 2472538012663144588, guid: 1208ddc2039f9ac4b844ab9b83f60dd2, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 2891844434
-      objectReference: {fileID: 0}
-    - target: {fileID: 2472538012663144588, guid: 1208ddc2039f9ac4b844ab9b83f60dd2, type: 3}
-      propertyPath: InScenePlacedSourceGlobalObjectIdHash
-      value: 2627119026
-      objectReference: {fileID: 0}
-    - target: {fileID: 2722838569305479413, guid: 1208ddc2039f9ac4b844ab9b83f60dd2, type: 3}
-      propertyPath: detectionLayers.m_Bits
-      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 4225317066114321498, guid: 1208ddc2039f9ac4b844ab9b83f60dd2, type: 3}
       propertyPath: m_LocalPosition.x

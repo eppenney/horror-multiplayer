@@ -49,7 +49,7 @@ public class StateControl : MonoBehaviour {
     TargetInfo target;
 
     public float agroTime = 5.0f;
-    private float agroTimer = 0.0f;
+   [SerializeField] private float agroTimer = 0.0f;
 
     private Navigation nav;
     private Sight sight;
@@ -57,7 +57,7 @@ public class StateControl : MonoBehaviour {
     [Header("Wander Settings")]
     public float wanderRadius = 10f;
 
-    [SerializeField] private float distanceThreshold = 0.5f;
+    [SerializeField] private float distanceThreshold = 0.25f;
 
     void Start() {
         nav = GetComponent<Navigation>();
@@ -100,34 +100,27 @@ public class StateControl : MonoBehaviour {
         switch (p_state)
         {
             case EnemyState.Wandering:
-                Debug.Log("Enemy is Wandering");
                 break;
             case EnemyState.Investigating:
-                Debug.Log("Enemy is Investigating");
                 nav.MoveToPosition(target.position);
                 break;
             case EnemyState.Searching:
-                Debug.Log("Enemy is Searching");
                 break;
             case EnemyState.Hunting:
-                Debug.Log("Enemy is Hunting");
                 nav.MoveToPosition(target.position);
                 break;
             case EnemyState.Fleeing:
-                Debug.Log("Enemy is Fleeing");
                 break;
             case EnemyState.Waiting:
-                Debug.Log("Enemy is Waiting");
                 break;
             case EnemyState.Following:
-                Debug.Log("Enemy is Following");
                 break;
             default:
-                Debug.LogWarning("Unhandled state: " + state);
                 break;
         }
+        EnemyState temp_state = state;
         state = p_state;
-        Debug.Log("State Changed to " + p_state);
+        Debug.Log("State changed from " + temp_state + " to " + p_state);
     }
 
     private void WanderingState()
@@ -194,13 +187,25 @@ public class StateControl : MonoBehaviour {
     
     private void HuntingState()
     {
-        agroTimer += Time.deltaTime; 
+        // Move towards target 
+        nav.MoveToPosition(target.position);
+
+        // Increase agro timer
+        // agroTimer += Time.deltaTime; 
+
+        // If the target is seen, reduce agro timer to zero and update position data
         TargetInfo new_target = SeePlayer();
-        if (new_target == target) {
-            agroTimer = 0.0f;
-            target = new_target;
+        if (new_target != null) {
+            if (new_target.transform == target.transform) {
+                // agroTimer = 0.0f;
+                target = new_target;
+                return;
+            }
         }
-        if (agroTimer > agroTime) {
+        
+        // If enough time has elapsed without sight or we have reached the last known position, search for target
+        if (/*agroTimer > agroTime ||*/ nav.agent.remainingDistance < distanceThreshold) {
+            agroTimer = 0.0f;
             ChangeState(EnemyState.Searching);
         }
     }
@@ -272,7 +277,7 @@ public class StateControl : MonoBehaviour {
         TargetInfo seenTarget = null;
 
         if (closestTarget != null) {
-            Debug.Log($"Closest visible target: {closestTarget.name} at distance: {closestDistance}");
+            // Debug.Log($"Closest visible target: {closestTarget.name}");
             seenTarget = new TargetInfo(closestTarget, closestTarget.position, 0.0f, true);
             return seenTarget;
         }

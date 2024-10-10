@@ -123,8 +123,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2189537802
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 2891844434
+  InScenePlacedSourceGlobalObjectIdHash: 2627119026
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -144,6 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 976453da5dc6b464b8936d58641cbf1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 0}
 --- !u!114 &2722838569305479413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,7 +161,7 @@ MonoBehaviour:
   detectionAngle: 90
   detectionLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
 --- !u!114 &3366014014057447702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,8 +204,9 @@ MonoBehaviour:
   state: 0
   targetList: []
   agroTime: 5
+  agroTimer: 0
   wanderRadius: 10
-  wanderInterval: 3
+  distanceThreshold: 0.25
 --- !u!195 &6319697779369300340
 NavMeshAgent:
   m_ObjectHideFlags: 0

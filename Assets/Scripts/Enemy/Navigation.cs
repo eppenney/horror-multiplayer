@@ -13,15 +13,15 @@ public class Navigation : MonoBehaviour {
         switch (path.status)
         {
             case UnityEngine.AI.NavMeshPathStatus.PathComplete:
-                Debug.Log($"{agent.name} moving to target.");
+                // Debug.Log($"{agent.name} moving to target.");
                 agent.SetPath(path);
                 return 1;
             case UnityEngine.AI.NavMeshPathStatus.PathPartial:
-                Debug.LogWarning($"{agent.name} moving partway to target.");
+                // Debug.LogWarning($"{agent.name} moving partway to target.");
                 agent.SetPath(path);
                 return 0;
             default:
-                Debug.LogError($"There is no valid path for {agent.name} to reach target.");
+                // Debug.LogError($"There is no valid path for {agent.name} to reach target.");
                 return -1;
         }
     }
