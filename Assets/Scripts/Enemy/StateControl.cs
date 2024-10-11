@@ -142,7 +142,7 @@ public class StateControl : MonoBehaviour {
             {
                 nav.MoveToPosition(hit.position);  // Move to the valid point
             }
-        }        
+        }
     }
 
     private void InvestigatingState()
