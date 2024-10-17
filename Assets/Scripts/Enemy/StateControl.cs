@@ -58,6 +58,7 @@ public class StateControl : MonoBehaviour {
     public float wanderRadius = 10f;
 
     [SerializeField] private float distanceThreshold = 0.25f;
+    private bool lockedAnimation = false;
 
     void Start() {
         nav = GetComponent<Navigation>();
@@ -67,6 +68,7 @@ public class StateControl : MonoBehaviour {
     }
 
     void Update() {
+        if (lockedAnimation) { return; } // If locked in an animation, do not act
         switch (state)
         {
             case EnemyState.Wandering:
@@ -97,6 +99,7 @@ public class StateControl : MonoBehaviour {
     }
 
     public void ChangeState(EnemyState p_state) {
+        if (lockedAnimation) { return; } // If locked in an animation, do not change state 
         switch (p_state)
         {
             case EnemyState.Wandering:
@@ -190,21 +193,20 @@ public class StateControl : MonoBehaviour {
         // Move towards target 
         nav.MoveToPosition(target.position);
 
-        // Increase agro timer
-        // agroTimer += Time.deltaTime; 
-
-        // If the target is seen, reduce agro timer to zero and update position data
+        // If the target is seen, update position data
         TargetInfo new_target = SeePlayer();
         if (new_target != null) {
             if (new_target.transform == target.transform) {
-                // agroTimer = 0.0f;
                 target = new_target;
                 return;
             }
         }
+
+        // If close enough to target, attack them 
+        // if (close) {attack}
         
-        // If enough time has elapsed without sight or we have reached the last known position, search for target
-        if (/*agroTimer > agroTime ||*/ nav.agent.remainingDistance < distanceThreshold) {
+        // If  we have reached the last known position, search for target
+        if (nav.agent.remainingDistance < distanceThreshold) {
             agroTimer = 0.0f;
             ChangeState(EnemyState.Searching);
         }
@@ -283,4 +285,7 @@ public class StateControl : MonoBehaviour {
         }
         return seenTarget;
     }
+
+    void LockAnimation() { lockedAnimation = true; }
+    void UnlockAnimation() { lockedAnimation = false; }
 }
