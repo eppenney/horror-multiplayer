@@ -1,6 +1,9 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class Attack : MonoBehaviour {
+public class Attack : NetworkBehaviour {
+    
+} {
     [SerializeField] private float startLag;
     [SerializeField] private float range;
     [SerializeField] private float attackRadius;
@@ -12,8 +15,13 @@ public class Attack : MonoBehaviour {
         anim = GetComponent<Animator>();
     }
 
-    public void Attack() {
-        StartCoroutine(PerformAttackAfterDelay());
+    [ServerRpc]
+    public void AttackServerRpc()
+    {
+        if (IsServer)
+        {
+            StartCoroutine(PerformAttackAfterDelay());
+        }
     }
 
     private IEnumerator PerformAttackAfterDelay()
@@ -31,7 +39,12 @@ public class Attack : MonoBehaviour {
             // Example: hitCollider.GetComponent<Health>().TakeDamage(damage);
         }
 
-        // Trigger attack animation if applicable
+        TriggerAttackAnimationClientRpc();
+    }
+
+    [ClientRpc]
+    private void TriggerAttackAnimationClientRpc()
+    {
         if (anim != null)
         {
             anim.SetTrigger("Attack");

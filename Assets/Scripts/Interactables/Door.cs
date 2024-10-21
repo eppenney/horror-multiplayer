@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 
 // Alright, throwing some GPT code in and figuring it out post-mordem. (Mortem?)
+// This needs to be switched to an animation controller, it's so much easier wtf was I thinking 
 
 public class Door : NetworkBehaviour, IInteractable
 {

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AI;
+using Unity.Netcode;
 
 /* 
 I'm thinking maintain 4 "targets"
@@ -41,7 +42,7 @@ public class TargetInfo
     }
 }
 
-public class StateControl : MonoBehaviour {
+public class StateControl : NetworkBehaviour {
 
     public EnemyState state = EnemyState.Wandering;
 
@@ -68,6 +69,7 @@ public class StateControl : MonoBehaviour {
     }
 
     void Update() {
+        if (!IsServer) { return; }
         if (lockedAnimation) { return; } // If locked in an animation, do not act
         switch (state)
         {
@@ -100,30 +102,17 @@ public class StateControl : MonoBehaviour {
 
     public void ChangeState(EnemyState p_state) {
         if (lockedAnimation) { return; } // If locked in an animation, do not change state 
-        switch (p_state)
-        {
-            case EnemyState.Wandering:
-                break;
-            case EnemyState.Investigating:
-                nav.MoveToPosition(target.position);
-                break;
-            case EnemyState.Searching:
-                break;
-            case EnemyState.Hunting:
-                nav.MoveToPosition(target.position);
-                break;
-            case EnemyState.Fleeing:
-                break;
-            case EnemyState.Waiting:
-                break;
-            case EnemyState.Following:
-                break;
-            default:
-                break;
-        }
+
         EnemyState temp_state = state;
         state = p_state;
+        UpdateStateClientRpc(newState);
         Debug.Log("State changed from " + temp_state + " to " + p_state);
+    }
+
+    [ClientRpc]
+    private void UpdateStateClientRpc(EnemyState newState)
+    {
+        state = newState; // Update the state on all clients
     }
 
     private void WanderingState()
@@ -150,6 +139,8 @@ public class StateControl : MonoBehaviour {
 
     private void InvestigatingState()
     {
+        nav.MoveToPosition(target.position);
+
         TargetInfo newTarget = SeePlayer();
         if (newTarget != null) {
             target = newTarget;
