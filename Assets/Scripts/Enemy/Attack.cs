@@ -1,9 +1,9 @@
 using UnityEngine;
 using Unity.Netcode;
+using System.Collections;
+
 
 public class Attack : NetworkBehaviour {
-    
-} {
     [SerializeField] private float startLag;
     [SerializeField] private float range;
     [SerializeField] private float attackRadius;

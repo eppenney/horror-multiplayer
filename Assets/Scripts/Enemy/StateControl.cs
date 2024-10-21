@@ -105,14 +105,14 @@ public class StateControl : NetworkBehaviour {
 
         EnemyState temp_state = state;
         state = p_state;
-        UpdateStateClientRpc(newState);
+        UpdateStateClientRpc(p_state);
         Debug.Log("State changed from " + temp_state + " to " + p_state);
     }
 
     [ClientRpc]
-    private void UpdateStateClientRpc(EnemyState newState)
+    private void UpdateStateClientRpc(EnemyState p_state)
     {
-        state = newState; // Update the state on all clients
+        state = p_state; // Update the state on all clients
     }
 
     private void WanderingState()
