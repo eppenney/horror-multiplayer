@@ -45,21 +45,26 @@ public class TargetInfo
 public class StateControl : NetworkBehaviour {
 
     public EnemyState state = EnemyState.Wandering;
-
     public List<TargetInfo> targetList;
     TargetInfo target;
-
-    public float agroTime = 5.0f;
-   [SerializeField] private float agroTimer = 0.0f;
-
     private Navigation nav;
     private Sight sight;
+    private bool lockedAnimation = false;
+    [SerializeField] private float distanceThreshold = 0.25f;
+
+
+    [Header("Hunt Settings")]
+    [SerializeField] private float agroTimer = 0.0f;
+    [SerializeField] private float huntSpeed = 3.5f;
+    public float agroTime = 5.0f;
 
     [Header("Wander Settings")]
-    public float wanderRadius = 10f;
+    [SerializeField] private float wanderRadius = 30f;
+    [SerializeField] private float wanderSpeed = 1.5f;
 
-    [SerializeField] private float distanceThreshold = 0.25f;
-    private bool lockedAnimation = false;
+    [Header("Search Settings")]
+    [SerializeField] private float searchRadius = 15f;
+    [SerializeField] private float searchSpeed = 2.5f;
 
     void Start() {
         nav = GetComponent<Navigation>();
@@ -117,6 +122,7 @@ public class StateControl : NetworkBehaviour {
 
     private void WanderingState()
     {
+        nav.agent.speed = wanderSpeed;
         TargetInfo newTarget = SeePlayer();
         if (newTarget != null) {
             target = newTarget;
@@ -139,6 +145,7 @@ public class StateControl : NetworkBehaviour {
 
     private void InvestigatingState()
     {
+        nav.agent.speed = wanderSpeed;
         nav.MoveToPosition(target.position);
 
         TargetInfo newTarget = SeePlayer();
@@ -153,6 +160,8 @@ public class StateControl : NetworkBehaviour {
 
     private void SearchingState()
     {
+        nav.agent.speed = searchSpeed;
+
         TargetInfo newTarget = SeePlayer();
         if (newTarget != null) {
             target = newTarget;
@@ -181,6 +190,7 @@ public class StateControl : NetworkBehaviour {
     
     private void HuntingState()
     {
+        nav.agent.speed = huntSpeed;
         // Move towards target 
         nav.MoveToPosition(target.position);
 
