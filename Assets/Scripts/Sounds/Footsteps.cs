@@ -7,14 +7,19 @@ public class FootstepManager : MonoBehaviour {
     [SerializeField] private float footstepInterval = 0.5f;
     [SerializeField] private float runInterval = 0.25f;
     [SerializeField] private float walkVolume = 0.5f;
+    [SerializeField] private float walkSoundRange = 2.0f;
     [SerializeField] private float runVolume = 0.7f;
+    [SerializeField] private float runSoundRange = 4.0f;
+    
     private CharacterController characterController;
     private UnityEngine.AI.NavMeshAgent navMeshAgent;
+    private SoundSource soundSource;
 
     private void Start() {
         characterController = GetComponent<CharacterController>();
         navMeshAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         audioSource = GetComponent<AudioSource>();
+        soundSource = GetComponent<SoundSource>();
         StartCoroutine(PlayFootstepSounds());
     }
 
@@ -34,6 +39,8 @@ public class FootstepManager : MonoBehaviour {
 
                 AudioClip clip = clips[Random.Range(0, clips.Length)];
                 audioSource.PlayOneShot(clip, volume);
+
+                soundSource.EmitSound(running ? runSoundRange : walkSoundRange, running ? runVolume : walkVolume);
 
                 yield return new WaitForSeconds(currentInterval);
             }

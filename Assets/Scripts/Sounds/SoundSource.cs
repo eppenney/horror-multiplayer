@@ -4,17 +4,21 @@ using Unity.Netcode;
 public class SoundSource : NetworkBehaviour {
     [SerializeField] private float detectionRadius = 10f;
     [SerializeField] private float volume = 1f;
-    public void EmitSound() {
+
+    public void EmitSound(float p_radius = -1.0f, float p_volume = -1.0f) {
+        if (p_radius == -1) { p_radius = detectionRadius; }
+        if (p_volume == -1) { p_volume = volume; }
+        
         if (!IsServer) return;
         Debug.Log("RPC hearb by server - Emitting Sound");
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, p_radius);
 
         foreach (var hit in hitColliders) {
             SoundListener soundListener = hit.GetComponent<SoundListener>();
 
             if (soundListener != null)
             {
-                soundListener.OnSoundHeard(transform, volume);
+                soundListener.OnSoundHeard(transform, p_volume);
             }
         }
     }
