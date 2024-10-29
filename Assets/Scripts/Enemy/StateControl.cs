@@ -171,9 +171,9 @@ public class StateControl : NetworkBehaviour {
         if (nav.agent.remainingDistance < distanceThreshold) 
         {
             // Choose a random point around the last known target position within a smaller search radius
-            Vector3 searchPoint = target.position + Random.insideUnitSphere * (wanderRadius / 2);
+            Vector3 searchPoint = target.position + Random.insideUnitSphere * (searchRadius);
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(searchPoint, out hit, wanderRadius / 2, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(searchPoint, out hit, searchRadius, NavMesh.AllAreas))
             {
                 nav.MoveToPosition(hit.position); // Move to the new search point
             }
