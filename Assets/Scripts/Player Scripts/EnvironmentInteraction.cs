@@ -12,10 +12,10 @@ public class EnvironmentInteraction : NetworkBehaviour
     [SerializeField]
     private LayerMask interactableLayer;
     [SerializeField]
-    private IInteractable target;
+    private Interactable target;
     public override void OnNetworkSpawn()
     {
-        playerCam = Camera.main.transform;// GetComponent<cameraControl>().GetCamera().transform;
+        playerCam = Camera.main.transform;
     }
 
     void Update() {
@@ -23,32 +23,46 @@ public class EnvironmentInteraction : NetworkBehaviour
         Inputs();
     }
 
-    void Primary() {
+    private void Primary() {
         if (target != null) {
             Debug.Log("Primary Use Activated");
             target.PrimaryUseDown();
         }
     }
 
-    void Secondary() {
+    private void Secondary() {
         if (target != null) {
             target.SecondaryUseDown();
         }
     }
 
-    void GetTarget() {
+    private void PrimaryUp() {
+        if (target != null) {
+            target.PrimaryUseUp();
+            target = null;
+        }
+    }
+
+    private void SecondaryUp() {
+        if (target != null) {
+            target.SecondaryUseUp();
+            target = null;
+        }
+    }
+
+    private void GetTarget() {
         RaycastHit hit;
         Ray ray = new Ray(playerCam.position, playerCam.forward);
         Debug.Log("Ray Sent");
         if (Physics.Raycast(ray, out hit, interactDistance, interactableLayer)) {
             Debug.Log("Target hit");
-            target = hit.transform.gameObject.GetComponent<IInteractable>();
+            target = hit.transform.gameObject.GetComponent<Interactable>();
         } else {
             target = null;
         }
     }
 
-    void Inputs() {
+    private void Inputs() {
         if (Input.GetButtonDown("Interact")) {
             GetTarget();
             Primary();
@@ -57,13 +71,11 @@ public class EnvironmentInteraction : NetworkBehaviour
             GetTarget();
             Secondary();
         }
-        if (Input.GetButtonUp("Fire1") && target != null) {
-            target.PrimaryUseUp();
-            target = null;
+        if (Input.GetButtonUp("Fire1")) {
+            PrimaryUp();
         }
-        if (Input.GetButtonUp("Fire2") && target != null) {
-            target.SecondaryUseUp();
-            target = null;
+        if (Input.GetButtonUp("Fire2")) {
+            SecondaryUp();
         }
     }
 }
