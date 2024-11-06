@@ -4,6 +4,7 @@ using System.Collections;
 
 
 public class Attack : NetworkBehaviour {
+    [SerializeField] private string attackName = "Default Attack";
     [SerializeField] private float startLag;
     [SerializeField] private float range;
     [SerializeField] private float attackRadius;
@@ -24,9 +25,10 @@ public class Attack : NetworkBehaviour {
         }
     }
 
+    // Private, accessible only through ServerRPC above
     private IEnumerator PerformAttackAfterDelay()
     {
-        // Wait for the specified start lag time
+        TriggerAttackAnimationClientRpc();
         yield return new WaitForSeconds(startLag);
 
         Vector3 attackPosition = transform.position + transform.forward * range;
@@ -35,13 +37,13 @@ public class Attack : NetworkBehaviour {
         Collider[] hitColliders = Physics.OverlapSphere(attackPosition, attackRadius, attackable);
         foreach (Collider hitCollider in hitColliders)
         {
-            Debug.Log($"Hit {hitCollider.name} with {damage} damage.");
-            // Example: hitCollider.GetComponent<Health>().TakeDamage(damage);
+            Debug.Log($"Hit {hitCollider.name} with {damage} damage using {attackName}.");
+            Health hp_component = hitCollider.GetComponent<Health>();
+            hp_component.AdjustHP(damage);
         }
-
-        TriggerAttackAnimationClientRpc();
     }
 
+    // Activates animation in all clients 
     [ClientRpc]
     private void TriggerAttackAnimationClientRpc()
     {
