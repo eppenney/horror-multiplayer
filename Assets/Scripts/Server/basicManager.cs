@@ -1,5 +1,4 @@
 using Unity.Netcode;
-
 using UnityEngine;
 
 public class basicManager : MonoBehaviour
@@ -11,7 +10,6 @@ public class basicManager : MonoBehaviour
         m_NetworkManager = GetComponent<NetworkManager>();
     }
 
-    // Update is called once per frame
     public void HostGame()
     {
         if (!m_NetworkManager.IsClient && !m_NetworkManager.IsServer)

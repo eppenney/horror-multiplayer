@@ -66,11 +66,11 @@ public class StateControl : NetworkBehaviour {
     [SerializeField] private float searchRadius = 15f;
     [SerializeField] private float searchSpeed = 2.5f;
 
-    void Start() {
+    public override void OnNetworkSpawn() {
         nav = GetComponent<Navigation>();
         sight = GetComponent<Sight>();
-
         targetList = new List<TargetInfo>();
+        Debug.Log($"Creature Intialized - IsServer: {IsServer}");
     }
 
     void Update() {

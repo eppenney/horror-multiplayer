@@ -1,5 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.Events;
+
 
 // Simple script, manages health, and runs events on death. Only server can manage health 
 // death effects are assumed to be managaing their own client-server logic 
@@ -13,7 +15,7 @@ public class Health : NetworkBehaviour {
 
     private void Awake() {
         if (IsServer) {
-            currentHealth.value = maxHealth;
+            currentHealth.Value = maxHealth;
         }
     }
 

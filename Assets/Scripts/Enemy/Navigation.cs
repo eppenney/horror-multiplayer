@@ -1,13 +1,25 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class Navigation : MonoBehaviour {
+public class Navigation : NetworkBehaviour {
     public UnityEngine.AI.NavMeshAgent agent;
 
-    void Start() {
+    public override void OnNetworkSpawn() {
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+
+        if (!IsServer) {
+            agent.enabled = false;
+        }
+        Debug.Log($"Enemy Navigation Initialized - IsServer: {IsServer}");
     }
 
-    public int MoveToPosition(Vector3 targetPosition) {
+    public void MoveToPosition(Vector3 targetPosition) {
+        MoveToPositionServerRPC(targetPosition);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void MoveToPositionServerRPC(Vector3 targetPosition) {
+        if (!IsServer) { return; }
         var path = new UnityEngine.AI.NavMeshPath();
         agent.CalculatePath(targetPosition, path);
         switch (path.status)
@@ -15,14 +27,14 @@ public class Navigation : MonoBehaviour {
             case UnityEngine.AI.NavMeshPathStatus.PathComplete:
                 // Debug.Log($"{agent.name} moving to target.");
                 agent.SetPath(path);
-                return 1;
+                return;
             case UnityEngine.AI.NavMeshPathStatus.PathPartial:
                 // Debug.LogWarning($"{agent.name} moving partway to target.");
                 agent.SetPath(path);
-                return 0;
+                return;
             default:
                 // Debug.LogError($"There is no valid path for {agent.name} to reach target.");
-                return -1;
+                return ;
         }
     }
 

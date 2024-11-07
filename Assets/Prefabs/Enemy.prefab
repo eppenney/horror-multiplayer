@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4705995747734408029}
   - component: {fileID: 5157342088929975278}
   - component: {fileID: 2472538012663144588}
+  - component: {fileID: 6185139783354134090}
   - component: {fileID: 2437829965668621903}
   - component: {fileID: 2722838569305479413}
   - component: {fileID: 3366014014057447702}
@@ -123,7 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2891844434
+  GlobalObjectIdHash: 2627119026
   InScenePlacedSourceGlobalObjectIdHash: 2627119026
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -132,6 +133,37 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &6185139783354134090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 54606134234138486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  Interpolate: 1
+  SlerpPosition: 0
 --- !u!114 &2437829965668621903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,11 +189,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 623b2aa55d778ef43ae18027b99e2116, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionRadius: 10
-  detectionAngle: 90
+  detectionRadius: 20
+  detectionAngle: 135
   detectionLayers:
     serializedVersion: 2
     m_Bits: 64
+  gizmoColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!114 &3366014014057447702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,10 +236,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   targetList: []
-  agroTime: 5
-  agroTimer: 0
-  wanderRadius: 10
   distanceThreshold: 0.25
+  agroTimer: 0
+  huntSpeed: 3.5
+  agroTime: 5
+  wanderRadius: 10
+  wanderSpeed: 1.5
+  searchRadius: 15
+  searchSpeed: 2.5
 --- !u!195 &6319697779369300340
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -217,7 +254,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 2
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
