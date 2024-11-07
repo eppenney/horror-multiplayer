@@ -1,5 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class basicManager : MonoBehaviour
 {
@@ -24,4 +25,3 @@ public class basicManager : MonoBehaviour
             m_NetworkManager.StartClient();
         }
     }
-}

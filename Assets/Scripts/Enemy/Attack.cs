@@ -7,6 +7,7 @@ public class Attack : NetworkBehaviour {
     [SerializeField] private string attackName = "Default Attack";
     [SerializeField] private float startLag;
     [SerializeField] private float range;
+    public float Range { get { return range; } } // Not so sure about this, we'll see how it goes 
     [SerializeField] private float attackRadius;
     [SerializeField] private int damage;
     [SerializeField] private LayerMask attackable;

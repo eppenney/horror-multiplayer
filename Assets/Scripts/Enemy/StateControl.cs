@@ -47,15 +47,18 @@ public class StateControl : NetworkBehaviour {
     public EnemyState state = EnemyState.Wandering;
     public List<TargetInfo> targetList;
     TargetInfo target;
+    private bool lockedAnimation = false;
+
+    // Component References 
     private Navigation nav;
     private Sight sight;
-    private bool lockedAnimation = false;
-    [SerializeField] private float distanceThreshold = 0.25f;
+    private Attack attack;
 
 
     [Header("Hunt Settings")]
     [SerializeField] private float agroTimer = 0.0f;
     [SerializeField] private float huntSpeed = 3.5f;
+    [SerializeField] private float distanceThreshold = 0.25f;
     public float agroTime = 5.0f;
 
     [Header("Wander Settings")]
@@ -203,9 +206,11 @@ public class StateControl : NetworkBehaviour {
             }
         }
 
-        // If close enough to target, attack them 
-        // if (close) {attack}
-        
+        // If close enough to target, attack them. This may need to be adjusted or changed to an attacking state  
+        if (Vector3.Distance(transform.position, target.transform.position) < attack.Range) {
+            attack.AttackServerRpc();
+        }
+
         // If  we have reached the last known position, search for target
         if (nav.agent.remainingDistance < distanceThreshold) {
             agroTimer = 0.0f;
