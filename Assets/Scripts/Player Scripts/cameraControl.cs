@@ -6,7 +6,7 @@ public class cameraControl : NetworkBehaviour
 {
     [SerializeField]
     private GameObject cam;
-    private GameObject camera;
+    private GameObject m_cam;
     [SerializeField]
     private Vector3 leanOffset;
     [SerializeField]
@@ -28,20 +28,21 @@ public class cameraControl : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsOwner) { return; }
-        camera = Instantiate(cam);
-        camera.transform.SetParent(transform);
-        camera = camera.transform.GetChild(0).gameObject;
-        camera.GetComponent<CinemachineVirtualCamera>().Follow = transform;
-        cinemachineCameraOffset = camera.GetComponent<CinemachineCameraOffset>();
-        originalPosition = camera.transform.position;
+        m_cam = Instantiate(cam);
+        m_cam.transform.SetParent(transform);
+        m_cam = m_cam.transform.GetChild(0).gameObject;
+        m_cam.GetComponent<CinemachineVirtualCamera>().Follow = transform;
+        cinemachineCameraOffset = m_cam.GetComponent<CinemachineCameraOffset>();
+        originalPosition = m_cam.transform.position;
     }
 
     public GameObject GetCamera() {
-        return camera; 
+        return m_cam; 
     }
 
     void Update() {
         if (!IsOwner) { return; }
+        if (m_cam == null) {}
         Inputs();
         Lean();
         Turn();
@@ -62,23 +63,6 @@ public class cameraControl : NetworkBehaviour
     }
 
     void Turn() {
-        /*
-        if (isTurning)
-        {
-            Quaternion targetRotation = Quaternion.Euler(new Vector3(camera.transform.localRotation.x, turnAngle.y, camera.transform.localRotation.x));
-            if (camera.transform.localRotation.y < turnAngle.y){
-                // camera.transform.localRotation = Quaternion.Slerp(camera.transform.localRotation, targetRotation, turnSpeed * Time.deltaTime);
-                camera.transform.localRotation = Quaternion.Euler(new Vector3(camera.transform.localRotation.x, camera.transform.localRotation.y + turnSpeed, camera.transform.localRotation.z));
-            }
-        } else {
-            Quaternion targetRotation = Quaternion.Euler(new Vector3(camera.transform.localRotation.x, 0.0f, camera.transform.localRotation.x));
-            if (Quaternion.Angle(camera.transform.rotation, targetRotation) > turnThreshold)
-            {
-                //camera.transform.localRotation = Quaternion.Slerp(camera.transform.localRotation, targetRotation, turnSpeed * Time.deltaTime);
-                camera.transform.localRotation = Quaternion.Euler(new Vector3(camera.transform.localRotation.x, camera.transform.localRotation.y - turnSpeed * Time.deltaTime, camera.transform.localRotation.z));
-            }
-        }
-        */
         float targetYRotation = isTurning ? turnAngle.y : 0.0f;
         float rotationDifference = Mathf.Abs(currentYRotation - targetYRotation);
 
@@ -89,8 +73,8 @@ public class cameraControl : NetworkBehaviour
         }
 
         // Apply the new Y rotation while keeping the X and Z rotations unchanged
-        Quaternion targetRotation = Quaternion.Euler(camera.transform.localRotation.eulerAngles.x, currentYRotation, camera.transform.localRotation.eulerAngles.z);
-        camera.transform.localRotation = targetRotation;
+        Quaternion targetRotation = Quaternion.Euler(m_cam.transform.localRotation.eulerAngles.x, currentYRotation, m_cam.transform.localRotation.eulerAngles.z);
+        m_cam.transform.localRotation = targetRotation;
         }
 
     void Inputs() {

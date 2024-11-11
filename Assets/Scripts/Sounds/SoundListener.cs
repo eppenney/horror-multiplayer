@@ -7,7 +7,7 @@ using Unity.Netcode;
 public class SoundEvent : UnityEvent<Transform, float> { }
 
 public class SoundListener : NetworkBehaviour, ListenerInterface  {
-    [SerializeField] private List<SoundEvent> soundEvents = new List<SoundEvent>();
+    [SerializeField] private SoundEvent soundEvent;
     public void OnSoundHeard(Transform source, float volume = 1.0f)
     {
         if (!IsServer) return;
@@ -16,17 +16,14 @@ public class SoundListener : NetworkBehaviour, ListenerInterface  {
 
     private void ReactToSound(Transform source, float volume)
     {
-        Debug.Log("Sound heard! Reacting...");
-        foreach (SoundEvent soundEvent in soundEvents)
+        // Debug.Log("Sound heard! Reacting...");
+        try
         {
-            try
-            {
-                soundEvent.Invoke(source, volume);
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"Error invoking sound event: {ex.Message}");
-            }
+            soundEvent.Invoke(source, volume);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"Error invoking sound event: {ex.Message}");
         }
     }
 } 

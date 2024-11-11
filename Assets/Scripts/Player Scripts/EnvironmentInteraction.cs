@@ -20,6 +20,7 @@ public class EnvironmentInteraction : NetworkBehaviour
 
     void Update() {
         if (!IsOwner) { return; }
+        if (playerCam == null) { playerCam = Camera.main.transform; }
         Inputs();
     }
 
@@ -77,6 +78,16 @@ public class EnvironmentInteraction : NetworkBehaviour
         if (Input.GetButtonUp("Fire2")) {
             SecondaryUp();
         }
+    }
+
+    private void OnDrawGizmos() {
+        if (playerCam == null) return; // Ensure playerCam is assigned
+
+        Ray ray = new Ray(playerCam.position, playerCam.forward);
+
+        Gizmos.color = Color.green;
+        // Draw the ray as a line to visualize the interaction distance
+        Gizmos.DrawLine(ray.origin, ray.origin + ray.direction * interactDistance);
     }
 }
 

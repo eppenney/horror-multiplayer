@@ -2,14 +2,15 @@ using UnityEngine;
 using System.Collections.Generic;
 
 public class Sight : MonoBehaviour {
-    [SerializeField] private float detectionRadius = 10f;
-    [SerializeField] private float detectionAngle = 90.0f;
-    [SerializeField] private LayerMask detectionLayers;
+    [SerializeField] private float detectionRadius = 20f;
+    [SerializeField] private float detectionAngle = 135.0f;
+    [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private LayerMask detectionLayer;
     [SerializeField] private Color gizmoColor = Color.green;
 
     public List<Transform> GetVisibleTargets() {
         List<Transform> visibleTargets = new List<Transform>();
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, detectionLayers);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, playerLayer);
 
         foreach (var hit in hitColliders) {
             Vector3 direction = (hit.transform.position - transform.position).normalized;
@@ -27,6 +28,21 @@ public class Sight : MonoBehaviour {
             }
         }
         return visibleTargets;
+    }
+
+    public bool CanSee(Transform p_target) {
+        RaycastHit hit;
+        Vector3 directionToTarget = p_target.position - transform.position;
+
+        if (Physics.Raycast(transform.position, directionToTarget, out hit, directionToTarget.magnitude, detectionLayer))
+        {
+            // If we hit something, check if it's not the target itself
+            if (hit.transform == p_target)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void OnDrawGizmosSelected() {

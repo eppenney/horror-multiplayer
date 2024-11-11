@@ -10,7 +10,7 @@ public class SoundSource : NetworkBehaviour {
         if (p_volume == -1) { p_volume = volume; }
         
         if (!IsServer) return;
-        Debug.Log("RPC hearb by server - Emitting Sound");
+        // Debug.Log("RPC hearb by server - Emitting Sound");
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, p_radius);
 
         foreach (var hit in hitColliders) {
@@ -25,21 +25,17 @@ public class SoundSource : NetworkBehaviour {
 
     [ServerRpc(RequireOwnership = false)]  // Allow clients to request the server to emit sound
     public void RequestEmitSoundServerRpc() {
-        Debug.Log("RPC Sent");
+        // Debug.Log("RPC Sent");
         EmitSound();  // Server processes the sound emission
     }
 
     // Call this method from a client to request the server to emit sound
     public void RequestSoundFromClient() {
-        // Debug.Log("Checking...");
-        // Debug.Log("IsHost: " + IsHost);
-        // Debug.Log("IsServer: " + IsServer);
-        // Debug.Log("IsClient: " + IsClient);
         if (IsServer) {
-            Debug.Log("Server emitting sound");
+            // Debug.Log("Server emitting sound");
             EmitSound();
         } else {
-            Debug.Log("Request Heard, Sending RPC");
+            // Debug.Log("Request Heard, Sending RPC");
             RequestEmitSoundServerRpc();  // Client sends the request to the server
         }
     }

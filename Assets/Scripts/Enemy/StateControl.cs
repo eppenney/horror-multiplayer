@@ -56,22 +56,24 @@ public class StateControl : NetworkBehaviour {
 
 
     [Header("Hunt Settings")]
-    [SerializeField] private float agroTimer = 0.0f;
     [SerializeField] private float huntSpeed = 3.5f;
     [SerializeField] private float distanceThreshold = 0.25f;
-    public float agroTime = 5.0f;
+
 
     [Header("Wander Settings")]
-    [SerializeField] private float wanderRadius = 30f;
+    [SerializeField] private float wanderRadius = 10f;
     [SerializeField] private float wanderSpeed = 1.5f;
 
     [Header("Search Settings")]
-    [SerializeField] private float searchRadius = 15f;
+    [SerializeField] private float searchTimer = 0.0f;
+    [SerializeField] private  float searchTime = 20.0f;
+    [SerializeField] private float searchRadius = 10f;
     [SerializeField] private float searchSpeed = 2.5f;
 
     public override void OnNetworkSpawn() {
         nav = GetComponent<Navigation>();
         sight = GetComponent<Sight>();
+        attack = GetComponent<Attack>();
         targetList = new List<TargetInfo>();
         Debug.Log($"Creature Intialized - IsServer: {IsServer}");
     }
@@ -171,7 +173,7 @@ public class StateControl : NetworkBehaviour {
             ChangeState(EnemyState.Hunting);    
         }
 
-        if (nav.agent.remainingDistance < distanceThreshold) 
+        if (nav.agent.remainingDistance < distanceThreshold && Random.Range(0, 10) < 1) 
         {
             // Choose a random point around the last known target position within a smaller search radius
             Vector3 searchPoint = target.position + Random.insideUnitSphere * (searchRadius);
@@ -183,10 +185,10 @@ public class StateControl : NetworkBehaviour {
         }
         
         // Transition to wandering state if search time exceeds a threshold and no target is found
-        agroTimer += Time.deltaTime;
-        if (agroTimer > agroTime)
+        searchTimer += Time.deltaTime;
+        if (searchTimer > searchTime)
         {
-            agroTimer = 0.0f;
+            searchTimer = 0.0f;
             ChangeState(EnemyState.Wandering);
         }
     }
@@ -194,26 +196,26 @@ public class StateControl : NetworkBehaviour {
     private void HuntingState()
     {
         nav.agent.speed = huntSpeed;
+
+        if (sight.CanSee(target.transform)){
+            target = new TargetInfo(target.transform, target.transform.position, target.volume);
+            nav.MoveToPosition(target.transform.position);
+            return;
+        }
+
         // Move towards target 
         nav.MoveToPosition(target.position);
 
-        // If the target is seen, update position data
-        TargetInfo new_target = SeePlayer();
-        if (new_target != null) {
-            if (new_target.transform == target.transform) {
-                target = new_target;
-                return;
-            }
-        }
-
         // If close enough to target, attack them. This may need to be adjusted or changed to an attacking state  
         if (Vector3.Distance(transform.position, target.transform.position) < attack.Range) {
+            Debug.Log($"Attacking");
             attack.AttackServerRpc();
         }
 
         // If  we have reached the last known position, search for target
         if (nav.agent.remainingDistance < distanceThreshold) {
-            agroTimer = 0.0f;
+            Debug.Log("Target Gone, Searching");
+            searchTimer = 0.0f;
             ChangeState(EnemyState.Searching);
         }
     }
@@ -287,11 +289,27 @@ public class StateControl : NetworkBehaviour {
         if (closestTarget != null) {
             // Debug.Log($"Closest visible target: {closestTarget.name}");
             seenTarget = new TargetInfo(closestTarget, closestTarget.position, 0.0f, true);
-            return seenTarget;
         }
         return seenTarget;
     }
 
     void LockAnimation() { lockedAnimation = true; }
     void UnlockAnimation() { lockedAnimation = false; }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (target != null)
+        {
+            // Set the color of the gizmo
+            Gizmos.color = Color.red;
+            
+            // Draw a sphere at the target's position
+            Gizmos.DrawSphere(target.position, 0.5f); // Adjust the size as needed
+            
+            if (state == EnemyState.Searching) {
+                Gizmos.DrawWireSphere(target.position, searchRadius);
+            }
+        }
+    }
+
 }
