@@ -9,8 +9,8 @@ When put down, the item form of it should be spawned
 public class Item : NetworkBehaviour {
     [SerializeField] private GameObject m_worldModel;
     [SerializeField] private GameObject m_playerModel;
-    public void PickUp() {}
-    public void PutDown() {}
+    public void PickUp(GameObject p_player) {}
+    public void PutDown(GameObject p_player) {}
     public virtual void PrimaryUseUp() {}
     public virtual void PrimaryUseDown() {}
     public virtual void SecondaryUseUp() {}
