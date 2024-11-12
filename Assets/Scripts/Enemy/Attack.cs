@@ -5,11 +5,11 @@ using System.Collections;
 
 public class Attack : NetworkBehaviour {
     [SerializeField] private string attackName = "Default Attack";
-    [SerializeField] private float startLag;
-    [SerializeField] private float range;
+    [SerializeField] private float startLag = 0.0f;
+    [SerializeField] private float range = 1.0f;
     public float Range { get { return range; } } // Not so sure about this, we'll see how it goes 
-    [SerializeField] private float attackRadius;
-    [SerializeField] private int damage;
+    [SerializeField] private float attackRadius = 0.5f;
+    [SerializeField] private Vector2 damageRange = Vector2(10, 25);
     [SerializeField] private LayerMask attackable;
     private Animator anim;
     
@@ -33,6 +33,8 @@ public class Attack : NetworkBehaviour {
         yield return new WaitForSeconds(startLag);
 
         Vector3 attackPosition = transform.position + transform.forward * range;
+
+        float damage = Random.Range(damageRange.x, damageRange.y);
 
         // Perform the attack
         Collider[] hitColliders = Physics.OverlapSphere(attackPosition, attackRadius, attackable);

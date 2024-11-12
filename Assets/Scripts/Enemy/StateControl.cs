@@ -214,6 +214,7 @@ public class StateControl : NetworkBehaviour {
         if (Vector3.Distance(transform.position, target.transform.position) < attack.Range) {
             Debug.Log($"Attacking");
             attack.AttackServerRpc();
+            return;
         }
 
         // If  we have reached the last known position, search for target
