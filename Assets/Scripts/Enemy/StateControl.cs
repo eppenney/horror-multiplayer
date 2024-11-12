@@ -314,6 +314,16 @@ public class StateControl : NetworkBehaviour {
         return seenTarget;
     }
 
+    public void TakeDamage(Transform p_source) {
+        // here, consult adaption. For now, random 
+        target = new TargetInfo(p_source, p_source.position, 10.0f);
+        if (Random.Range(0, 10) < 2) {
+            ChangeState(EnemyState.Hunting);
+        } else {
+            ChangeState(EnemyState.Fleeing);
+        }
+    }
+
     void LockAnimation() { lockedAnimation = true; }
     void UnlockAnimation() { lockedAnimation = false; }
 
