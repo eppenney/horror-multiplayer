@@ -59,7 +59,6 @@ public class StateControl : NetworkBehaviour {
     [SerializeField] private float huntSpeed = 3.5f;
     [SerializeField] private float distanceThreshold = 0.25f;
 
-
     [Header("Wander Settings")]
     [SerializeField] private float wanderRadius = 10f;
     [SerializeField] private float wanderSpeed = 1.5f;
@@ -69,6 +68,11 @@ public class StateControl : NetworkBehaviour {
     [SerializeField] private  float searchTime = 20.0f;
     [SerializeField] private float searchRadius = 10f;
     [SerializeField] private float searchSpeed = 2.5f;
+
+    [Header("Fleeing Settings")]
+    [SerializeField] private float fleeSpeed = 4.0f;
+    [SerializeField] private float fleeDistance = 25.0f;
+    [SerializeField] private float fleeRadius = 10.0f;
 
     public override void OnNetworkSpawn() {
         nav = GetComponent<Navigation>();
@@ -220,9 +224,26 @@ public class StateControl : NetworkBehaviour {
         }
     }
 
+    // Simple flee function - may need to be updated to account for traps (whether or not traps can be considered as targets, really)
+    // Will be linked with when the enemy takes damage. Target should be set to damage source, then either transition to flee or hunt
     private void FleeingState()
     {
-        // Dummy function for Fleeing state
+        nav.agent.speed = fleeSpeed;
+
+        TargetInfo newTarget = SeePlayer();
+        if (nav.agent.remainingDistance < distanceThreshold && newTarget != null) {
+            // Get the direction away from target
+            Vector3 direction = (transform.position - target.position).normalized * fleeDistance;
+
+            // Pick a random point within a sphere of fleeRadius, fleeDistance units away
+            Vector3 fleePoint = target.position + fleeDistance + Random.insideUnitSphere * (fleeRadius);
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(fleePoint, out hit, fleeRadius, NavMesh.AllAreas))
+            {
+                nav.MoveToPosition(hit.position); // Move to the new point
+            }
+        }
     }
 
     private void WaitingState()
