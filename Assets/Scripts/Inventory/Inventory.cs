@@ -7,7 +7,9 @@ Script for interacting with, picking up, storing, and using items.
 Should be placed on a player prefab
 */
 
-public class Inventory : MonoBehaviour {
+public class Inventory : NetworkBehaviour {
+    
+} {
     [SerializeField] private List<Item> m_items = new List<Item>(4);
     [SerializeField] private int m_heldItemIndex = 0;
     [SerializeField] private float interactDistance = 1.0f;
@@ -16,7 +18,7 @@ public class Inventory : MonoBehaviour {
     private Transform playerCam;
 
     void Start() {
-        if (playerCam == null) { playerCam = Camera.main.transform; }
+        if (playerCam == null) playerCam = Camera.main.transform;
 
         for (int i = 0; i < 4; i++) {
             m_items.Add(null);
