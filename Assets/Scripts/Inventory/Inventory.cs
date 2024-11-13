@@ -10,6 +10,7 @@ Should be placed on a player prefab
 public class Inventory : MonoBehaviour {
     [SerializeField] private List<Item> m_items = new List<Item>(4);
     [SerializeField] private int m_heldItemIndex = 0;
+    [SerializeField] private float interactDistance = 1.0f;
     [SerializeField] private LayerMask itemLayer; 
     private Transform playerCam;
 
@@ -49,10 +50,10 @@ public class Inventory : MonoBehaviour {
     }
 
     private void Drop() {
-        Item itemToDrop = GetCurrentHeldItem();
+        Item itemToDrop = m_items[m_heldItemIndex];
         if (itemToDrop != null) {
             itemToDrop.PutDown(gameObject);
-            m_items[index] = null;
+            m_items[m_heldItemIndex] = null;
         }
     }
 

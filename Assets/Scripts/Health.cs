@@ -9,32 +9,39 @@ using UnityEngine.Events;
 public class Health : NetworkBehaviour {
     [SerializeField] private int maxHealth = 100;
     private NetworkVariable<int> currentHealth = new NetworkVariable<int>();
-    [SerializeField] private UnityEvent[] onDeathEvents;
+    [SerializeField] private UnityEvent deathEvents;
 
     public int GetHealth() { return currentHealth.Value; }
 
-    private void Awake() {
-        if (IsServer) {
-            currentHealth.Value = maxHealth;
-        }
+    public override void OnNetworkSpawn() {
+        currentHealth.Value = maxHealth;
     }
 
     public void AdjustHP(int p_change) {
-        if (!IsServer) { return; }
+        // if (!IsServer) { return; }
 
+        Debug.Log($"Health - {currentHealth.Value}");
         currentHealth.Value += p_change;
+        Debug.Log($"Health - {currentHealth.Value}");
         currentHealth.Value = Mathf.Clamp(currentHealth.Value, 0, maxHealth);
+        Debug.Log($"Health - {currentHealth.Value}");
 
         if (currentHealth.Value <= 0) {
             Death();
         }
+        Debug.Log($"Health - {currentHealth.Value}");
     }
+
+    // [ServerRpc(RequireOwnership = false)]
+    // public void RequestAdjustHPServerRpc(int p_change)
+    // {
+    //     // The server processes the health adjustment.
+    //     AdjustHP(p_change);
+    // }
 
     private void Death()
     {
-        foreach (UnityEvent deathEvent in onDeathEvents)
-        {
-            deathEvent.Invoke();
-        }
+        Debug.Log("Dead");
+        deathEvents.Invoke();
     }
 }

@@ -115,6 +115,8 @@ GameObject:
   - component: {fileID: 2507045687537722704}
   - component: {fileID: 2289578211616689778}
   - component: {fileID: -166182191588591154}
+  - component: {fileID: -3504225447472487806}
+  - component: {fileID: 1973797954615505210}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -249,7 +251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1089569840
+  GlobalObjectIdHash: 1809564215
   InScenePlacedSourceGlobalObjectIdHash: 1089569840
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
@@ -348,6 +350,7 @@ MonoBehaviour:
   interactableLayer:
     serializedVersion: 2
     m_Bits: 128
+  target: {fileID: 0}
 --- !u!114 &2507045687537722704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -371,7 +374,9 @@ MonoBehaviour:
   footstepInterval: 0.6
   runInterval: 0.4
   walkVolume: 0.5
+  walkSoundRange: 2
   runVolume: 0.7
+  runSoundRange: 4
 --- !u!82 &2289578211616689778
 AudioSource:
   m_ObjectHideFlags: 0
@@ -482,3 +487,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   detectionRadius: 10
   volume: 1
+--- !u!114 &-3504225447472487806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7285416845091824802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44fbd9130a78d2a4381cbf4f36ade913, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  deathEvents:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1973797954615505210}
+        m_TargetAssemblyTypeName: Logout, Assembly-CSharp
+        m_MethodName: LogoutPlayer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1973797954615505210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7285416845091824802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e2afdaede3c649469b60581efc0d6c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lobbyScene: Menu

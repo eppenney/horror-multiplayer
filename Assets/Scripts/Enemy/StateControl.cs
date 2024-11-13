@@ -47,7 +47,7 @@ public class StateControl : NetworkBehaviour {
     public EnemyState state = EnemyState.Wandering;
     public List<TargetInfo> targetList;
     TargetInfo target;
-    private bool lockedAnimation = false;
+    private NetworkVariable<bool> lockedAnimation = new NetworkVariable<bool>(false);
 
     // Component References 
     private Navigation nav;
@@ -84,7 +84,7 @@ public class StateControl : NetworkBehaviour {
 
     void Update() {
         if (!IsServer) { return; }
-        if (lockedAnimation) { return; } // If locked in an animation, do not act
+        if (lockedAnimation.Value) { return; } // If locked in an animation, do not act
         switch (state)
         {
             case EnemyState.Wandering:
@@ -115,7 +115,7 @@ public class StateControl : NetworkBehaviour {
     }
 
     public void ChangeState(EnemyState p_state) {
-        if (lockedAnimation) { return; } // If locked in an animation, do not change state 
+        if (lockedAnimation.Value) { return; } // If locked in an animation, do not change state 
 
         EnemyState temp_state = state;
         state = p_state;
@@ -201,6 +201,14 @@ public class StateControl : NetworkBehaviour {
     {
         nav.agent.speed = huntSpeed;
 
+        // If close enough to target, attack them. This may need to be adjusted or changed to an attacking state  
+        if (attack.TargetInRange(target.transform)) {
+            Debug.Log($"Attacking");
+            attack.AttackServerRpc();
+            // LockAnimation();
+            return;
+        }
+
         if (sight.CanSee(target.transform)){
             target = new TargetInfo(target.transform, target.transform.position, target.volume);
             nav.MoveToPosition(target.transform.position);
@@ -209,13 +217,6 @@ public class StateControl : NetworkBehaviour {
 
         // Move towards target 
         nav.MoveToPosition(target.position);
-
-        // If close enough to target, attack them. This may need to be adjusted or changed to an attacking state  
-        if (Vector3.Distance(transform.position, target.transform.position) < attack.Range) {
-            Debug.Log($"Attacking");
-            attack.AttackServerRpc();
-            return;
-        }
 
         // If  we have reached the last known position, search for target
         if (nav.agent.remainingDistance < distanceThreshold) {
@@ -237,7 +238,7 @@ public class StateControl : NetworkBehaviour {
             Vector3 direction = (transform.position - target.position).normalized * fleeDistance;
 
             // Pick a random point within a sphere of fleeRadius, fleeDistance units away
-            Vector3 fleePoint = target.position + fleeDistance + Random.insideUnitSphere * (fleeRadius);
+            Vector3 fleePoint = target.position + direction + Random.insideUnitSphere * (fleeRadius);
 
             NavMeshHit hit;
             if (NavMesh.SamplePosition(fleePoint, out hit, fleeRadius, NavMesh.AllAreas))
@@ -325,8 +326,31 @@ public class StateControl : NetworkBehaviour {
         }
     }
 
-    void LockAnimation() { lockedAnimation = true; }
-    void UnlockAnimation() { lockedAnimation = false; }
+    [ServerRpc(RequireOwnership = false)]
+    public void LockAnimationServerRpc()
+    {
+        lockedAnimation.Value = true;
+        LockAnimationClientRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void UnlockAnimationServerRpc()
+    {
+        lockedAnimation.Value = false;
+        UnlockAnimationClientRpc();
+    }
+
+    [ClientRpc]
+    private void LockAnimationClientRpc()
+    {
+        lockedAnimation.Value = true;
+    }
+
+    [ClientRpc]
+    private void UnlockAnimationClientRpc()
+    {
+        lockedAnimation.Value = false;
+    }
 
     private void OnDrawGizmosSelected()
     {

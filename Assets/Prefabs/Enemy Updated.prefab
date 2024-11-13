@@ -1183,7 +1183,49 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6899769094566875523, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8317456515760691231}
+    - targetCorrespondingSourceObject: {fileID: 5981218730283738843, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 340633871746441494}
+    - targetCorrespondingSourceObject: {fileID: 5981218730591916999, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6637357359114156237}
   m_SourcePrefab: {fileID: 100100000, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
+--- !u!1 &220877359450963031 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5981218730283738843, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
+  m_PrefabInstance: {fileID: 5769454681583098508}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &340633871746441494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 220877359450963031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb847f2e016db2844960e0a058dc27f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stateController: {fileID: 2018810740914962147}
+--- !u!1 &220877360099068235 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5981218730591916999, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
+  m_PrefabInstance: {fileID: 5769454681583098508}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6637357359114156237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 220877360099068235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb847f2e016db2844960e0a058dc27f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stateController: {fileID: 2018810740914962147}
 --- !u!1 &1139937476259416847 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6899769094566875523, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
@@ -1201,7 +1243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3895007302
+  GlobalObjectIdHash: 59012728
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -1278,14 +1320,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   targetList: []
-  agroTimer: 0
   huntSpeed: 3.5
   distanceThreshold: 0.25
-  agroTime: 5
   wanderRadius: 30
   wanderSpeed: 1.5
+  searchTimer: 0
+  searchTime: 20
   searchRadius: 15
   searchSpeed: 2.5
+  fleeSpeed: 4
+  fleeDistance: 25
+  fleeRadius: 10
 --- !u!114 &6748028157821850077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1334,12 +1379,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackName: Default Attack
   startLag: 0
-  range: 0
-  attackRadius: 0
-  damage: 0
+  endLag: 1
+  attackPos: {x: 0, y: 1, z: 2}
+  attackRadius: 0.5
+  damageRange: {x: 10, y: 25}
   attackable:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
 --- !u!114 &5054265659591850444
 MonoBehaviour:
   m_ObjectHideFlags: 0
