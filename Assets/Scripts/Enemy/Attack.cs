@@ -13,10 +13,12 @@ public class Attack : NetworkBehaviour {
     [SerializeField] private float attackRadius = 0.5f;
     [SerializeField] private Vector2 damageRange = new Vector2(10, 25);
     [SerializeField] private LayerMask attackable;
-    private Animator anim;
+    private Animator anim1;
+    private Animator anim2;
     
     void Initialize() {
-        if (anim == null) anim = transform.GetChild(0).GetComponent<Animator>();
+        if (anim1 == null) anim1 = transform.GetChild(0).GetComponent<Animator>();
+        if (anim2 == null) anim2 = transform.GetChild(1).GetComponent<Animator>();
         range = attackPos.z;
     }
 
@@ -61,9 +63,10 @@ public class Attack : NetworkBehaviour {
     [ClientRpc]
     private void TriggerAttackAnimationClientRpc()
     {
-        if (anim != null)
+        if (anim1 != null)
         {
-            anim.SetTrigger("Attack");
+            anim1.SetTrigger("Attack");
+            anim2.SetTrigger("Attack");
         }
     }
 

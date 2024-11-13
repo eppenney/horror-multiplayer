@@ -53,7 +53,8 @@ public class StateControl : NetworkBehaviour {
     private Navigation nav;
     private Sight sight;
     private Attack attack;
-    private Animator anim;
+    private Animator anim1;
+    private Animator anim2;
 
     [Header("Hunt Settings")]
     [SerializeField] private float huntSpeed = 3.5f;
@@ -79,7 +80,8 @@ public class StateControl : NetworkBehaviour {
         if (sight == null) sight = GetComponent<Sight>();
         if (attack == null) attack = GetComponent<Attack>();
         if (targetList == null) targetList = new List<TargetInfo>();
-        if (anim == null) anim = transform.GetChild(0).GetComponent<Animator>();
+        if (anim1 == null) anim1 = transform.GetChild(0).GetComponent<Animator>();
+        if (anim2 == null) anim2 = transform.GetChild(1).GetComponent<Animator>();
 
         Debug.Log($"Creature Intialized - IsServer: {IsServer}");
     }
@@ -98,7 +100,10 @@ public class StateControl : NetworkBehaviour {
             // Debug.Log("Halting until unlocked"); 
             return; 
         } // If locked in an animation, do not act
-        anim.SetFloat("Speed", nav.agent.velocity.magnitude);
+        
+        anim1.SetFloat("Speed", nav.agent.velocity.magnitude);
+        anim2.SetFloat("Speed", nav.agent.velocity.magnitude);
+        
         switch (state)
         {
             case EnemyState.Wandering:
@@ -221,6 +226,7 @@ public class StateControl : NetworkBehaviour {
         if (attack.TargetInRange(target.transform)) {
             Debug.Log($"Attacking");
             attack.AttackServerRpc();
+            LockAnimationServerRpc();
             // LockAnimation();
             return;
         }
