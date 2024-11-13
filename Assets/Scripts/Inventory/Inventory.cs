@@ -8,8 +8,6 @@ Should be placed on a player prefab
 */
 
 public class Inventory : NetworkBehaviour {
-    
-} {
     [SerializeField] private List<Item> m_items = new List<Item>(4);
     [SerializeField] private int m_heldItemIndex = 0;
     [SerializeField] private float interactDistance = 1.0f;
@@ -47,10 +45,10 @@ public class Inventory : NetworkBehaviour {
             Item p_item = GetItem();
             if (p_item != null) {
                 // Create the correct item, and add it to the players hand
-                GameObjext handItem = Instantiate(p_item.m_playerModel);
-                p_item.transform.SetParent(itemContainer.transform);
+                GameObject handItem = Instantiate(p_item.GetPlayerModel());
+                handItem.transform.SetParent(itemContainer.transform);
 
-                m_items[m_heldItemIndex] = p_item;
+                m_items[m_heldItemIndex] = handItem.GetComponent<Item>();
                 p_item.PickUp(gameObject);
             }
         }

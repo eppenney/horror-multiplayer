@@ -22,9 +22,9 @@ public class Gun : Item {
         Debug.Log("Ray Sent");
         if (Physics.Raycast(ray, out hit, bulletDistance, targetLayer)) {
             Debug.Log("Target hit");
-            Health hp = hit.gameObject.GetComponent<Health>();
+            Health hp = hit.transform.gameObject.GetComponent<Health>();
             if (hp != null) {
-                hp.AdjustHP(Random.Range(damageRange.x, damageRange.y));
+                hp.AdjustHP((int) Random.Range(damageRange.x, damageRange.y));
             }
         }
     }

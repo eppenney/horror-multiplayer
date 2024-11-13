@@ -4061,10 +4061,6 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 619071409
       objectReference: {fileID: 0}
-    - target: {fileID: 745792080977589685, guid: 8136c0c88fb635a46b54ba91f2094069, type: 3}
-      propertyPath: InScenePlacedSourceGlobalObjectIdHash
-      value: 3895007302
-      objectReference: {fileID: 0}
     - target: {fileID: 1139937476259416845, guid: 8136c0c88fb635a46b54ba91f2094069, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.1875801
@@ -4108,18 +4104,6 @@ PrefabInstance:
     - target: {fileID: 1139937476259416847, guid: 8136c0c88fb635a46b54ba91f2094069, type: 3}
       propertyPath: m_Name
       value: Enemy Updated
-      objectReference: {fileID: 0}
-    - target: {fileID: 4733651872527711838, guid: 8136c0c88fb635a46b54ba91f2094069, type: 3}
-      propertyPath: attackPos.z
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4733651872527711838, guid: 8136c0c88fb635a46b54ba91f2094069, type: 3}
-      propertyPath: attackRadius
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4733651872527711838, guid: 8136c0c88fb635a46b54ba91f2094069, type: 3}
-      propertyPath: attackable.m_Bits
-      value: 64
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4588,7 +4572,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2046863749
 MonoBehaviour:
   m_ObjectHideFlags: 0

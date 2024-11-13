@@ -1,60 +1,64 @@
 using UnityEngine;
 using Unity.Netcode;
 
-/*
-Item class, meant to be inherited and override use functions. 
-When picked up, it should dissapear from game world 
-When put down, the item form of it should be spawned
-*/
 public class Item : NetworkBehaviour {
-    // Both prefabs should contain the item class with reference to itself
-    [SerializeField] private GameObject m_worldModel { get; };
-    [SerializeField] private GameObject m_playerModel { get; };
-    public void PickUp(GameObject p_player)
-    {
-        if (IsServer) { DestroyItemServerRpc(); } // Ensure the object is destroyed by the server
-        else { RequestPickUpServerRpc(p_player); }
-    }
-    public void PutDown(GameObject p_player) {
-        if (IsServer) {
-            Instantiate(w_worldModel, p_player.transform.position + p_player.transform.forward);
-            DestroyItemServerRpc();
-        }   
-        else
-        {
-            RequestPutDownServerRpc(p_player);
+    public GameObject m_worldModel;
+    public GameObject m_playerModel;
+
+    public void PickUp(GameObject p_player) {
+        if (IsServer) { DestroyItemServerRpc(); }
+        else {
+            NetworkObject netObj = p_player.GetComponent<NetworkObject>();
+            if (netObj != null) {
+                RequestPickUpServerRpc(new NetworkObjectReference(netObj));
+            }
         }
     }
 
-    // Called to request picking up an item (client to server)
-    [ServerRpc]
-    private void RequestPickUpServerRpc(GameObject p_player)
-    {
-        PickUp(p_player);
+    public void PutDown(GameObject p_player) {
+        if (IsServer) {
+            Instantiate(m_worldModel, p_player.transform.position + p_player.transform.forward, Quaternion.identity);
+            DestroyItemServerRpc();
+        } else {
+            NetworkObject netObj = p_player.GetComponent<NetworkObject>();
+            if (netObj != null) {
+                RequestPutDownServerRpc(new NetworkObjectReference(netObj));
+            }
+        }
     }
 
-    // Called to request putting down an item (client to server)
     [ServerRpc]
-    private void RequestPutDownServerRpc(GameObject p_player)
-    {
-        PutDown(p_player);
+    private void RequestPickUpServerRpc(NetworkObjectReference p_playerRef) {
+        if (p_playerRef.TryGet(out NetworkObject p_playerNetObj)) {
+            PickUp(p_playerNetObj.gameObject);
+        }
     }
 
-    // Server RPC to destroy this object
+    [ServerRpc]
+    private void RequestPutDownServerRpc(NetworkObjectReference p_playerRef) {
+        if (p_playerRef.TryGet(out NetworkObject p_playerNetObj)) {
+            PutDown(p_playerNetObj.gameObject);
+        }
+    }
+
     [ServerRpc(RequireOwnership = false)]
-    private void DestroyItemServerRpc()
-    {
-        if (IsServer)
-        {
-            // Destroy both the network object and the GameObject itself
+    private void DestroyItemServerRpc() {
+        if (IsServer) {
             NetworkObject networkObject = GetComponent<NetworkObject>();
-            if (networkObject != null && networkObject.IsSpawned)
-            {
+            if (networkObject != null && networkObject.IsSpawned) {
                 Destroy(networkObject.gameObject);
             }
         }
     }
-    
+
+    public GameObject GetWorldModel() {
+        return m_worldModel;
+    }
+
+    public GameObject GetPlayerModel() {
+        return m_playerModel;
+    }
+
     public virtual void PrimaryUseUp() {}
     public virtual void PrimaryUseDown() {}
     public virtual void SecondaryUseUp() {}

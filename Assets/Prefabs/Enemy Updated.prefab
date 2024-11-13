@@ -826,15 +826,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6899769094566875521, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.1765378
+      value: 1.1875801
       objectReference: {fileID: 0}
     - target: {fileID: 6899769094566875521, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.00000023841858
+      value: 0.0000019073486
       objectReference: {fileID: 0}
     - target: {fileID: 6899769094566875521, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.6217127
+      value: 14.205984
       objectReference: {fileID: 0}
     - target: {fileID: 6899769094566875521, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1128,6 +1128,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 54.28917
       objectReference: {fileID: 0}
+    - target: {fileID: 8979022353975496759, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: c43702b78d7fae4419334f3c2de30149, type: 2}
+    - target: {fileID: 8979022355182249155, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: c43702b78d7fae4419334f3c2de30149, type: 2}
     - target: {fileID: 8998975393484131235, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -1243,8 +1251,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 59012728
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 619071409
+  InScenePlacedSourceGlobalObjectIdHash: 3895007302
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -1380,12 +1388,12 @@ MonoBehaviour:
   attackName: Default Attack
   startLag: 0
   endLag: 1
-  attackPos: {x: 0, y: 1, z: 2}
+  attackPos: {x: 0, y: 1, z: 1}
   attackRadius: 0.5
   damageRange: {x: 10, y: 25}
   attackable:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
 --- !u!114 &5054265659591850444
 MonoBehaviour:
   m_ObjectHideFlags: 0

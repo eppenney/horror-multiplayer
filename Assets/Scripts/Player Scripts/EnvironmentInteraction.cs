@@ -27,6 +27,7 @@ public class EnvironmentInteraction : NetworkBehaviour
     }
     void Update() {
         if (!IsOwner) { return; }
+        Initialize();
         Inputs();
     }
 

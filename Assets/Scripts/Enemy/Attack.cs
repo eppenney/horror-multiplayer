@@ -16,7 +16,7 @@ public class Attack : NetworkBehaviour {
     private Animator anim;
     
     void Initialize() {
-        if (anim == null) anim = GetComponent<Animator>();
+        if (anim == null) anim = transform.GetChild(0).GetComponent<Animator>();
         range = attackPos.z;
     }
 

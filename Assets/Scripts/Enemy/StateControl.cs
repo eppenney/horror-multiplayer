@@ -53,6 +53,7 @@ public class StateControl : NetworkBehaviour {
     private Navigation nav;
     private Sight sight;
     private Attack attack;
+    private Animator anim;
 
     [Header("Hunt Settings")]
     [SerializeField] private float huntSpeed = 3.5f;
@@ -78,6 +79,7 @@ public class StateControl : NetworkBehaviour {
         if (sight == null) sight = GetComponent<Sight>();
         if (attack == null) attack = GetComponent<Attack>();
         if (targetList == null) targetList = new List<TargetInfo>();
+        if (anim == null) anim = transform.GetChild(0).GetComponent<Animator>();
 
         Debug.Log($"Creature Intialized - IsServer: {IsServer}");
     }
@@ -92,7 +94,11 @@ public class StateControl : NetworkBehaviour {
 
     void Update() {
         if (!IsServer) { return; }
-        if (lockedAnimation.Value) { return; } // If locked in an animation, do not act
+        if (lockedAnimation.Value) {
+            // Debug.Log("Halting until unlocked"); 
+            return; 
+        } // If locked in an animation, do not act
+        anim.SetFloat("Speed", nav.agent.velocity.magnitude);
         switch (state)
         {
             case EnemyState.Wandering:
@@ -208,6 +214,8 @@ public class StateControl : NetworkBehaviour {
     private void HuntingState()
     {
         nav.agent.speed = huntSpeed;
+        // Move towards target 
+        nav.MoveToPosition(target.position);
 
         // If close enough to target, attack them. This may need to be adjusted or changed to an attacking state  
         if (attack.TargetInRange(target.transform)) {
@@ -222,9 +230,6 @@ public class StateControl : NetworkBehaviour {
             nav.MoveToPosition(target.transform.position);
             return;
         }
-
-        // Move towards target 
-        nav.MoveToPosition(target.position);
 
         // If  we have reached the last known position, search for target
         if (nav.agent.remainingDistance < distanceThreshold) {
@@ -351,12 +356,14 @@ public class StateControl : NetworkBehaviour {
     [ClientRpc]
     private void LockAnimationClientRpc()
     {
+        // Debug.Log("Locking");
         lockedAnimation.Value = true;
     }
 
     [ClientRpc]
     private void UnlockAnimationClientRpc()
     {
+        // Debug.Log("Unlocking");
         lockedAnimation.Value = false;
     }
 
