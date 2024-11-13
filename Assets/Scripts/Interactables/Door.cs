@@ -12,11 +12,19 @@ public class Door : NetworkBehaviour
     private Quaternion openRotation;
     private NetworkVariable<bool> isDoorOpen = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    private void Start()
+    private void Initialize()
     {
         closedRotation = transform.rotation;
         openRotation = Quaternion.Euler(transform.eulerAngles + new Vector3(0, openAngle, 0));
         isDoorOpen.OnValueChanged += OnDoorStateChanged;
+    }
+
+    public override void OnNetworkSpawn() {
+        Initialize();
+    }
+
+    void Start() {
+        Initialize();
     }
 
     [ServerRpc(RequireOwnership = false)]

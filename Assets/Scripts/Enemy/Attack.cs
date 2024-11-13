@@ -15,9 +15,16 @@ public class Attack : NetworkBehaviour {
     [SerializeField] private LayerMask attackable;
     private Animator anim;
     
-    void Start() {
-        anim = GetComponent<Animator>();
+    void Initialize() {
+        if (anim == null) anim = GetComponent<Animator>();
         range = attackPos.z;
+    }
+
+    public override void OnNetworkSpawn() {
+        Initialize();
+    }
+    void Start() {
+        Initialize();
     }
 
     [ServerRpc]

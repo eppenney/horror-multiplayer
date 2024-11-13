@@ -13,14 +13,20 @@ public class EnvironmentInteraction : NetworkBehaviour
     private LayerMask interactableLayer;
     [SerializeField]
     private Interactable target;
+
+    private void Initialize() {
+        if (playerCam == null) playerCam = Camera.main.transform;
+    }
     public override void OnNetworkSpawn()
     {
-        playerCam = Camera.main.transform;
+        Initialize();
     }
 
+    void Start() {
+        Initialize();
+    }
     void Update() {
         if (!IsOwner) { return; }
-        if (playerCam == null) { playerCam = Camera.main.transform; }
         Inputs();
     }
 

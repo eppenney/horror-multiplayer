@@ -4,13 +4,18 @@ using Unity.Netcode;
 public class Navigation : NetworkBehaviour {
     public UnityEngine.AI.NavMeshAgent agent;
 
-    public override void OnNetworkSpawn() {
-        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-
-        if (!IsServer) {
-            agent.enabled = false;
-        }
+    private void Initialize() {
+        if (agent == null) agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (!IsServer) agent.enabled = false;
         Debug.Log($"Enemy Navigation Initialized - IsServer: {IsServer}");
+    }
+    
+    public override void OnNetworkSpawn() {
+        Initialize();
+    }
+
+    void Start() {
+        Initialize();
     }
 
     public void MoveToPosition(Vector3 targetPosition) {

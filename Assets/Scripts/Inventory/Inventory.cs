@@ -12,6 +12,7 @@ public class Inventory : MonoBehaviour {
     [SerializeField] private int m_heldItemIndex = 0;
     [SerializeField] private float interactDistance = 1.0f;
     [SerializeField] private LayerMask itemLayer; 
+    [SerializeField] private GameObject itemContainer; 
     private Transform playerCam;
 
     void Start() {
@@ -43,6 +44,10 @@ public class Inventory : MonoBehaviour {
         if (Input.GetButtonDown("Fire1")) {
             Item p_item = GetItem();
             if (p_item != null) {
+                // Create the correct item, and add it to the players hand
+                GameObjext handItem = Instantiate(p_item.m_playerModel);
+                p_item.transform.SetParent(itemContainer.transform);
+
                 m_items[m_heldItemIndex] = p_item;
                 p_item.PickUp(gameObject);
             }

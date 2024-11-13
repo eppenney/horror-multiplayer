@@ -29,15 +29,13 @@ public class MovementInput : NetworkBehaviour
     private float verticalRotation = 0f;
     private CharacterController controller;
 
-
     private float dX, dZ;
     // Start is called before the first frame update
-    void Start()
+    private void Initialize()
     {
-        controller = GetComponent<CharacterController>();
-        if (head == null) {
-            head = GetComponent<cameraControl>().GetCamera().transform;
-        }
+        if (controller == null) controller = GetComponent<CharacterController>();
+        if (head == null) head = GetComponent<cameraControl>().GetCamera().transform;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public override void OnNetworkSpawn()
@@ -46,11 +44,17 @@ public class MovementInput : NetworkBehaviour
         if (IsOwner)
         {
             Debug.Log("This client owns the player object.");
-            Cursor.lockState = CursorLockMode.Locked;
+            Initialize();
         }
         else
         {
             Debug.Log("This client does NOT own the player object.");
+        }
+    }
+
+    void Start() {
+        if (IsOwner) {
+            Initialize();
         }
     }
 

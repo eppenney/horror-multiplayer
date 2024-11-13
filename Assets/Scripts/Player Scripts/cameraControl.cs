@@ -25,15 +25,25 @@ public class cameraControl : NetworkBehaviour
     float currentYRotation = 0.0f;
 
     // Start is called before the first frame update
-    public override void OnNetworkSpawn()
+    private void Initialize()
     {
         if (!IsOwner) { return; }
-        m_cam = Instantiate(cam);
-        m_cam.transform.SetParent(transform);
-        m_cam = m_cam.transform.GetChild(0).gameObject;
-        m_cam.GetComponent<CinemachineVirtualCamera>().Follow = transform;
-        cinemachineCameraOffset = m_cam.GetComponent<CinemachineCameraOffset>();
-        originalPosition = m_cam.transform.position;
+        if (m_cam == null) {
+            m_cam = Instantiate(cam);
+            m_cam.transform.SetParent(transform);
+            m_cam = m_cam.transform.GetChild(0).gameObject;
+            m_cam.GetComponent<CinemachineVirtualCamera>().Follow = transform;
+            cinemachineCameraOffset = m_cam.GetComponent<CinemachineCameraOffset>();
+            originalPosition = m_cam.transform.position;
+        }
+    }
+
+    public override void OnNetworkSpawn() {
+        Initialize();
+    }
+
+    void Start() {
+        Initialize();
     }
 
     public GameObject GetCamera() {
@@ -42,7 +52,6 @@ public class cameraControl : NetworkBehaviour
 
     void Update() {
         if (!IsOwner) { return; }
-        if (m_cam == null) {}
         Inputs();
         Lean();
         Turn();

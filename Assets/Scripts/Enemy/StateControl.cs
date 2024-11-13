@@ -54,7 +54,6 @@ public class StateControl : NetworkBehaviour {
     private Sight sight;
     private Attack attack;
 
-
     [Header("Hunt Settings")]
     [SerializeField] private float huntSpeed = 3.5f;
     [SerializeField] private float distanceThreshold = 0.25f;
@@ -74,12 +73,21 @@ public class StateControl : NetworkBehaviour {
     [SerializeField] private float fleeDistance = 25.0f;
     [SerializeField] private float fleeRadius = 10.0f;
 
-    public override void OnNetworkSpawn() {
-        nav = GetComponent<Navigation>();
-        sight = GetComponent<Sight>();
-        attack = GetComponent<Attack>();
-        targetList = new List<TargetInfo>();
+    void Initialize() {
+        if (nav == null) nav = GetComponent<Navigation>();
+        if (sight == null) sight = GetComponent<Sight>();
+        if (attack == null) attack = GetComponent<Attack>();
+        if (targetList == null) targetList = new List<TargetInfo>();
+
         Debug.Log($"Creature Intialized - IsServer: {IsServer}");
+    }
+
+    public override void OnNetworkSpawn() {
+        Initialize();
+    }
+
+    public void Start() {
+        Initialize();
     }
 
     void Update() {
