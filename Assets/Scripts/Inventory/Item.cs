@@ -2,61 +2,29 @@ using UnityEngine;
 using Unity.Netcode;
 
 public class Item : NetworkBehaviour {
-    public GameObject m_worldModel;
-    public GameObject m_playerModel;
+    private NetworkVariable<bool> isPickedUp = new NetworkVariable<bool>(false);
 
-    public void PickUp(GameObject p_player) {
-        if (IsServer) { DestroyItemServerRpc(); }
-        else {
-            NetworkObject netObj = p_player.GetComponent<NetworkObject>();
-            if (netObj != null) {
-                RequestPickUpServerRpc(new NetworkObjectReference(netObj));
-            }
-        }
+    // Public getter for isPickedUp
+    public bool IsPickedUp {
+        get { return isPickedUp.Value; }
     }
 
-    public void PutDown(GameObject p_player) {
-        if (IsServer) {
-            Instantiate(m_worldModel, p_player.transform.position + p_player.transform.forward, Quaternion.identity);
-            DestroyItemServerRpc();
-        } else {
-            NetworkObject netObj = p_player.GetComponent<NetworkObject>();
-            if (netObj != null) {
-                RequestPutDownServerRpc(new NetworkObjectReference(netObj));
-            }
-        }
-    }
-
-    [ServerRpc]
-    private void RequestPickUpServerRpc(NetworkObjectReference p_playerRef) {
-        if (p_playerRef.TryGet(out NetworkObject p_playerNetObj)) {
-            PickUp(p_playerNetObj.gameObject);
-        }
-    }
-
-    [ServerRpc]
-    private void RequestPutDownServerRpc(NetworkObjectReference p_playerRef) {
-        if (p_playerRef.TryGet(out NetworkObject p_playerNetObj)) {
-            PutDown(p_playerNetObj.gameObject);
-        }
-    }
-
+    // Server RPC to be called by a client for picking up the item
     [ServerRpc(RequireOwnership = false)]
-    private void DestroyItemServerRpc() {
+    public void PickUpServerRpc() {
         if (IsServer) {
-            NetworkObject networkObject = GetComponent<NetworkObject>();
-            if (networkObject != null && networkObject.IsSpawned) {
-                Destroy(networkObject.gameObject);
-            }
+            isPickedUp.Value = true;
+            Debug.Log("Item picked up by a client.");
         }
     }
 
-    public GameObject GetWorldModel() {
-        return m_worldModel;
-    }
-
-    public GameObject GetPlayerModel() {
-        return m_playerModel;
+    // Server RPC to be called by a client for putting down the item
+    [ServerRpc(RequireOwnership = false)]
+    public void PutDownServerRpc() {
+        if (IsServer) {
+            isPickedUp.Value = false;
+            Debug.Log("Item put down by a client.");
+        }
     }
 
     public virtual void PrimaryUseUp() {}

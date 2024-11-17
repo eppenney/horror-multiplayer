@@ -29,6 +29,10 @@ public class Gun : Item {
         }
     }
 
+    public override void PrimaryUseUp() {
+        // Stop Aiming
+    }
+
     public override void SecondaryUseDown() {
         // Aim
     }

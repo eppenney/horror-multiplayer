@@ -61,9 +61,9 @@ public class EnvironmentInteraction : NetworkBehaviour
     private void GetTarget() {
         RaycastHit hit;
         Ray ray = new Ray(playerCam.position, playerCam.forward);
-        Debug.Log("Ray Sent");
+        Debug.Log("Environment Ray Sent");
         if (Physics.Raycast(ray, out hit, interactDistance, interactableLayer)) {
-            Debug.Log("Target hit");
+            Debug.Log("Environment Target hit");
             target = hit.transform.gameObject.GetComponent<Interactable>();
         } else {
             target = null;
