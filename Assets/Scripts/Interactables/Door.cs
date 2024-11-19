@@ -6,8 +6,7 @@ using Unity.Netcode;
 public class Door : NetworkBehaviour
 {
 
-    [SerializeField]
-    private float openAngle = -90.0f;
+    [SerializeField] private float openAngle = -90.0f;
     private Quaternion closedRotation;
     private Quaternion openRotation;
     private NetworkVariable<bool> isDoorOpen = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);

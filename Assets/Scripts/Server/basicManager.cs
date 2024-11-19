@@ -11,11 +11,21 @@ using TMPro;
 
 public class basicManager : MonoBehaviour
 {
+    public static basicManager Instance { get; private set; }
     private NetworkManager m_NetworkManager;
     [SerializeField] private string m_sceneName; 
 
     private async void Awake()
     {
+        // Singleton enforcement
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject); // Destroy duplicate instance
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // Persist across scenes
+        
         m_NetworkManager = GetComponent<NetworkManager>();
 
         // Initialize Unity services
