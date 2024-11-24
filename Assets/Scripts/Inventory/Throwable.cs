@@ -33,13 +33,12 @@ public class Throwable : Item {
 
     private void Throw() {
         Debug.Log("Thrown!");
-        if (IsPickedUp && IsOwner) {
+        if (true) {
             Rigidbody rb = GetComponent<Rigidbody>();
             if (rb != null) {
                 rb.isKinematic = false;
                 rb.velocity = Vector3.zero;
                 rb.AddForce(playerCam.forward * throwForce, ForceMode.VelocityChange);
-                PutDownServerRpc();
             }
         }
     }

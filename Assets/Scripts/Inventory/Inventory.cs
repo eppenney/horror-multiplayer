@@ -2,24 +2,17 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
 
-/*
-Script for interacting with, picking up, storing, and using items. 
-Should be placed on a player prefab
-*/
-
 public class Inventory : NetworkBehaviour {
     [SerializeField] private List<GameObject> m_items = new List<GameObject>(4);
     [SerializeField] private int m_heldItemIndex = 0;
     [SerializeField] private float interactDistance = 1.0f;
-    [SerializeField] private LayerMask itemLayer; 
-    [SerializeField] private GameObject itemContainer; 
-    [SerializeField] private Transform heldPosition; 
+    [SerializeField] private LayerMask itemLayer;
+    [SerializeField] private Transform heldPosition;
     [SerializeField] private float defaultThrowForce = 5.0f;
     private Transform playerCam;
 
     void Start() {
         if (playerCam == null) playerCam = Camera.main.transform;
-
         for (int i = 0; i < 4; i++) {
             m_items.Add(null);
         }
@@ -44,71 +37,47 @@ public class Inventory : NetworkBehaviour {
     }
 
     private GameObject GetItem() {
-        GameObject target = null; 
-
+        GameObject target = null;
         RaycastHit hit;
         Ray ray = new Ray(playerCam.position, playerCam.forward);
-        Debug.Log("Item Ray Sent");
         if (Physics.Raycast(ray, out hit, interactDistance, itemLayer)) {
-            Debug.Log("Item Target hit");
             target = hit.transform.gameObject;
         }
         return target;
     }
 
     private void PickUp() {
-        GameObject p_item = GetItem();
-        
-        if (p_item != null) {
-             // Parent the item to the player
-            NetworkObject netObj = p_item.GetComponent<NetworkObject>();
-            if (netObj != null) {
-                NetworkObject parentNetObj = heldPosition.parent.GetComponent<NetworkObject>();
-                if (parentNetObj != null && netObj != null) {
-                    ChangeOwnershipServerRpc(netObj.NetworkObjectId, parentNetObj.NetworkObjectId);
-                    ReparentItemServerRpc(netObj, parentNetObj);
-                } else {
-                    return;
-                }
-            } else {
-                return;
-            }
+        GameObject worldItem = GetItem();
+        if (worldItem != null) {
+            PickUp p_itemComponent = worldItem.GetComponent<PickUp>();
+            if (p_itemComponent == null) { return; }
 
-            // Get the item component and set picked up value
-            Item p_itemComponent = p_item.GetComponent<Item>();
-            if (p_itemComponent.IsPickedUp) { return; }
-            p_itemComponent.PickUpServerRpc();
+            string item_id = p_itemComponent.ID;
+            GameObject newItem = SpawnPlayerItem(item_id);
 
-            Rigidbody rb = p_item.GetComponent<Rigidbody>();
-            rb.isKinematic  = true;
+            if (newItem == null) { return;}
 
-            m_items[m_heldItemIndex] = p_item;
+            Destroy(worldItem);
+            m_items[m_heldItemIndex] = newItem;
         }
     }
 
     private void Drop() {
         GameObject itemToDrop = m_items[m_heldItemIndex];
-        if (itemToDrop != null) {
-            NetworkObject netObj = itemToDrop.GetComponent<NetworkObject>();
-            if (netObj != null) {
-                // Detach from the player on the server
-                UnparentItemServerRpc(netObj.NetworkObjectId);
-                ChangeOwnershipServerRpc(netObj.NetworkObjectId, NetworkManager.LocalClientId);
-            } else {
-                Debug.LogWarning("Failed to drop item. Item is not a valid NetworkObject.");
-                return;
-            }
+        if (itemToDrop == null) { return; }
+    
+        Item p_itemComponent = itemToDrop.GetComponent<Item>();
+        if (p_itemComponent == null) { return; }
 
-            Item p_itemComponent = itemToDrop.GetComponent<Item>();
-            p_itemComponent.PutDownServerRpc();
+        string item_id = p_itemComponent.ID;
+        ItemPrefab itemPrefab = ItemManager.Instance.GetItemPrefabByID(item_id);
+        GameObject newItem = Instantiate(itemPrefab.worldPrefab, transform.position + transform.forward, Quaternion.identity);
 
-            Rigidbody rb = itemToDrop.GetComponent<Rigidbody>();
-            rb.isKinematic  = false;
-            rb.velocity = Vector3.zero;
-            rb.AddForce(playerCam.forward * defaultThrowForce);
+        NetworkObject netObj = newItem.GetComponent<NetworkObject>();
+        netObj.Spawn();
 
-            m_items[m_heldItemIndex] = null;
-        }
+        Destroy(itemToDrop);
+        m_items[m_heldItemIndex] = null;
     }
 
     private void ChangeItem() {
@@ -136,58 +105,28 @@ public class Inventory : NetworkBehaviour {
             if (Input.GetMouseButtonDown(1)) p_item.SecondaryUseDown();
             if (Input.GetMouseButtonUp(1)) p_item.SecondaryUseUp();
         }
-    } 
+    }
 
     private void SetItemsToHeldPosition() {
-    foreach (GameObject item in m_items) {
-        if (item != null) {
-            // Log the starting position of the item
-            Debug.Log($"Transform Target position: {heldPosition.position}");
-            Debug.Log($"Item {item.name} starting position: {item.transform.position}");
-
-            item.transform.position = heldPosition.position;
-            item.transform.rotation = heldPosition.rotation;
-
-            item.transform.position = new Vector3(0.0f, 1.0f, 0.0f);
-
-            // Log the ending position of the item
-            Debug.Log($"Item {item.name} ending position: {item.transform.position}");
-        }
-    }
-}
-
-
-    [ServerRpc(RequireOwnership = false)]
-    private void ReparentItemServerRpc(NetworkObjectReference item, NetworkObjectReference parent) {
-        if (item.TryGet(out NetworkObject itemNetObj) && parent.TryGet(out NetworkObject parentNetObj)) {
-            if (!itemNetObj.TrySetParent(parentNetObj)) {
-                Debug.LogWarning("Failed to reparent item on server.");
+        foreach (GameObject item in m_items) {
+            if (item != null) {
+                item.transform.position = heldPosition.position;
+                item.transform.rotation = heldPosition.rotation;
             }
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void UnparentItemServerRpc(ulong itemId) {
-        NetworkObject itemNetObj = NetworkManager.SpawnManager.SpawnedObjects[itemId];
+    private GameObject SpawnPlayerItem(string p_id) {
+        ItemPrefab itemPrefab = ItemManager.Instance.GetItemPrefabByID(p_id);
 
-        if (itemNetObj != null) {
-            if (!itemNetObj.TrySetParent((GameObject) null)) {
-                Debug.LogWarning("Server failed to unparent item.");
-            }
-        }
-    }
+        if (itemPrefab == null) { return null; }
 
-    // ServerRpc for changing ownership
-    [ServerRpc(RequireOwnership = false)]
-    private void ChangeOwnershipServerRpc(ulong itemId, ulong newOwnerClientId) {
-        NetworkObject itemNetObj = NetworkManager.SpawnManager.SpawnedObjects[itemId];
+        // Spawn or instantiate the characterRepresentation at the held position on all clients
+        GameObject p_characterRep = Instantiate(itemPrefab.playerPrefab);
+        p_characterRep.transform.SetParent(heldPosition);
+        p_characterRep.transform.localPosition = Vector3.zero;
+        p_characterRep.transform.localRotation = Quaternion.identity;
 
-        if (itemNetObj != null) {
-            // Change ownership on the server
-            itemNetObj.ChangeOwnership(newOwnerClientId);
-            Debug.Log($"Ownership changed to ClientId {newOwnerClientId}");
-        } else {
-            Debug.LogWarning("Failed to change ownership of item.");
-        }
+        return p_characterRep;
     }
 }
