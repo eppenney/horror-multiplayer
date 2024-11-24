@@ -63,8 +63,11 @@ public class Inventory : NetworkBehaviour {
              // Parent the item to the player
             NetworkObject netObj = p_item.GetComponent<NetworkObject>();
             if (netObj != null) {
-                if (!netObj.TrySetParent(heldPosition.parent)) {
-                    Debug.LogWarning("Failed to reparent NetworkObject item.");
+                NetworkObject parentNetObj = heldPosition.parent.GetComponent<NetworkObject>();
+                if (parentNetObj != null && netObj != null) {
+                    ChangeOwnershipServerRpc(netObj.NetworkObjectId, parentNetObj.NetworkObjectId);
+                    ReparentItemServerRpc(netObj, parentNetObj);
+                } else {
                     return;
                 }
             } else {
@@ -76,8 +79,6 @@ public class Inventory : NetworkBehaviour {
             if (p_itemComponent.IsPickedUp) { return; }
             p_itemComponent.PickUpServerRpc();
 
-            
-
             Rigidbody rb = p_item.GetComponent<Rigidbody>();
             rb.isKinematic  = true;
 
@@ -88,14 +89,13 @@ public class Inventory : NetworkBehaviour {
     private void Drop() {
         GameObject itemToDrop = m_items[m_heldItemIndex];
         if (itemToDrop != null) {
-            // Detach from the player
             NetworkObject netObj = itemToDrop.GetComponent<NetworkObject>();
             if (netObj != null) {
-                if (!netObj.TrySetParent((GameObject) null, true)) {
-                    Debug.LogWarning("Failed to reparent NetworkObject item.");
-                    return;
-                }
+                // Detach from the player on the server
+                UnparentItemServerRpc(netObj.NetworkObjectId);
+                ChangeOwnershipServerRpc(netObj.NetworkObjectId, NetworkManager.LocalClientId);
             } else {
+                Debug.LogWarning("Failed to drop item. Item is not a valid NetworkObject.");
                 return;
             }
 
@@ -139,11 +139,55 @@ public class Inventory : NetworkBehaviour {
     } 
 
     private void SetItemsToHeldPosition() {
-        foreach (GameObject item in m_items) {
-            if (item != null) {
-                item.transform.localPosition = heldPosition.localPosition;
-                item.transform.localRotation = heldPosition.localRotation;
+    foreach (GameObject item in m_items) {
+        if (item != null) {
+            // Log the starting position of the item
+            Debug.Log($"Transform Target position: {heldPosition.position}");
+            Debug.Log($"Item {item.name} starting position: {item.transform.position}");
+
+            item.transform.position = heldPosition.position;
+            item.transform.rotation = heldPosition.rotation;
+
+            item.transform.position = new Vector3(0.0f, 1.0f, 0.0f);
+
+            // Log the ending position of the item
+            Debug.Log($"Item {item.name} ending position: {item.transform.position}");
+        }
+    }
+}
+
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ReparentItemServerRpc(NetworkObjectReference item, NetworkObjectReference parent) {
+        if (item.TryGet(out NetworkObject itemNetObj) && parent.TryGet(out NetworkObject parentNetObj)) {
+            if (!itemNetObj.TrySetParent(parentNetObj)) {
+                Debug.LogWarning("Failed to reparent item on server.");
             }
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void UnparentItemServerRpc(ulong itemId) {
+        NetworkObject itemNetObj = NetworkManager.SpawnManager.SpawnedObjects[itemId];
+
+        if (itemNetObj != null) {
+            if (!itemNetObj.TrySetParent((GameObject) null)) {
+                Debug.LogWarning("Server failed to unparent item.");
+            }
+        }
+    }
+
+    // ServerRpc for changing ownership
+    [ServerRpc(RequireOwnership = false)]
+    private void ChangeOwnershipServerRpc(ulong itemId, ulong newOwnerClientId) {
+        NetworkObject itemNetObj = NetworkManager.SpawnManager.SpawnedObjects[itemId];
+
+        if (itemNetObj != null) {
+            // Change ownership on the server
+            itemNetObj.ChangeOwnership(newOwnerClientId);
+            Debug.Log($"Ownership changed to ClientId {newOwnerClientId}");
+        } else {
+            Debug.LogWarning("Failed to change ownership of item.");
         }
     }
 }

@@ -4107,7 +4107,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1139937476259416847, guid: 8136c0c88fb635a46b54ba91f2094069, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2018810740914962147, guid: 8136c0c88fb635a46b54ba91f2094069, type: 3}
       propertyPath: fleeDistance
