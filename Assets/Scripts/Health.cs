@@ -20,9 +20,9 @@ public class Health : NetworkBehaviour {
     public void AdjustHP(int p_change) {
         // if (!IsServer) { return; }
 
-        Debug.Log($"Health - {currentHealth.Value}");
+        // Debug.Log($"Health - {currentHealth.Value}");
         currentHealth.Value += p_change;
-        Debug.Log($"Health - {currentHealth.Value}");
+        // Debug.Log($"Health - {currentHealth.Value}");
         currentHealth.Value = Mathf.Clamp(currentHealth.Value, 0, maxHealth);
         Debug.Log($"Health - {currentHealth.Value}");
 

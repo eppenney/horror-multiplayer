@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.Events;
 
 // This should still be switched to an animation controller eventually, but has been majorly paired down with new Interactable script - 24.11.05
 
@@ -25,11 +26,11 @@ public class Generator : NetworkBehaviour
 
     public void Update() {
         if (!IsServer) { return; }
-        if (currentCapacity > -1.0f) {
-            currentCapacity -= drainRate * Time.deltaTime;
-            if (currentCapacity <= 0.0f) {
+        if (currentCapacity.Value > -1.0f) {
+            currentCapacity.Value -= drainRate * Time.deltaTime;
+            if (currentCapacity.Value <= 0.0f) {
                 OnEmpty();
-                currentCapacity = -1.0f;
+                currentCapacity.Value = -1.0f;
             }
         }
     }
@@ -42,7 +43,7 @@ public class Generator : NetworkBehaviour
     private void FillServerRPC(float p_amount)
     {
         if (!IsServer) { return; }
-        currentCapacity += p_amount;
+        currentCapacity.Value += p_amount;
     }
 
     public void OnEmpty() {

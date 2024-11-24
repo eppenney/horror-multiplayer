@@ -60,9 +60,20 @@ public class Inventory : NetworkBehaviour {
         GameObject p_item = GetItem();
         
         if (p_item != null) {
+            // Get the item component and set picked up value
             Item p_itemComponent = p_item.GetComponent<Item>();
             if (p_itemComponent.IsPickedUp) { return; }
             p_itemComponent.PickUpServerRpc();
+
+             // Parent the item to the player
+            NetworkObject netObj = p_item.GetComponent<NetworkObject>();
+            if (netObj != null) {
+                if (!netObj.TrySetParent(heldPosition.parent)) {
+                    Debug.LogWarning("Failed to reparent NetworkObject item.");
+                }
+            } else {
+                p_item.transform.SetParent(heldPosition, true);
+            }
 
             Rigidbody rb = p_item.GetComponent<Rigidbody>();
             rb.isKinematic  = true;
@@ -81,6 +92,16 @@ public class Inventory : NetworkBehaviour {
             rb.isKinematic  = false;
             rb.velocity = Vector3.zero;
             rb.AddForce(playerCam.forward * defaultThrowForce);
+
+            // Detach from the player
+            NetworkObject netObj = itemToDrop.GetComponent<NetworkObject>();
+            if (netObj != null) {
+                if (!netObj.TrySetParent(null, true)) {
+                    Debug.LogWarning("Failed to reparent NetworkObject item.");
+                }
+            } else {
+                itemToDrop.transform.SetParent(null, true);
+            }
 
             m_items[m_heldItemIndex] = null;
         }
@@ -116,8 +137,12 @@ public class Inventory : NetworkBehaviour {
     private void SetItemsToHeldPosition() {
         foreach (GameObject item in m_items) {
             if (item != null) {
-                item.transform.position = heldPosition.position;
-                item.transform.rotation = heldPosition.rotation;
+                // if (item.transform.parent != heldPosition) {
+                //     item.transform.SetParent(heldPosition, true);
+                // }
+
+                item.transform.localPosition = heldPosition.localPosition;
+                item.transform.localRotation = heldPosition.localRotation;
                 // item.transform.localScale = heldPosition.localScale;
             }
         }

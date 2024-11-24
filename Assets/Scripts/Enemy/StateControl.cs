@@ -74,6 +74,7 @@ public class StateControl : NetworkBehaviour {
     [SerializeField] private float fleeSpeed = 4.0f;
     [SerializeField] private float fleeDistance = 25.0f;
     [SerializeField] private float fleeRadius = 10.0f;
+    private bool fleeTargetSet = false; 
 
     void Initialize() {
         if (nav == null) nav = GetComponent<Navigation>();
@@ -250,6 +251,20 @@ public class StateControl : NetworkBehaviour {
     private void FleeingState()
     {
         nav.agent.speed = fleeSpeed;
+        if (!fleeTargetSet) {
+            // Get the direction away from target
+            Vector3 direction = (transform.position - target.position).normalized * fleeDistance;
+
+            // Pick a random point within a sphere of fleeRadius, fleeDistance units away
+            Vector3 fleePoint = target.position + direction + Random.insideUnitSphere * (fleeRadius);
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(fleePoint, out hit, fleeRadius, NavMesh.AllAreas))
+            {
+                nav.MoveToPosition(hit.position); // Move to the new point
+                fleeTargetSet = true;
+            }
+        }
 
         TargetInfo newTarget = SeePlayer();
         if (nav.agent.remainingDistance < distanceThreshold && newTarget != null) {
@@ -264,6 +279,9 @@ public class StateControl : NetworkBehaviour {
             {
                 nav.MoveToPosition(hit.position); // Move to the new point
             }
+        } else if (nav.agent.remainingDistance < distanceThreshold && newTarget == null) {
+            fleeTargetSet = false;
+            ChangeState(EnemyState.Wandering);
         }
     }
 
@@ -337,7 +355,7 @@ public class StateControl : NetworkBehaviour {
 
     public void TakeDamage(Transform p_source) {
         // here, consult adaption. For now, random 
-        target = new TargetInfo(p_source, p_source.position, 10.0f);
+        if (p_source != null) target = new TargetInfo(p_source, p_source.position, 10.0f);
         if (Random.Range(0, 10) < 2) {
             ChangeState(EnemyState.Hunting);
         } else {

@@ -1,3 +1,7 @@
+using UnityEngine;
+using Unity.Netcode;
+using UnityEngine.Events;
+
 public class LevelEvent : NetworkBehaviour {
     public UnityEvent eventTrigger = new UnityEvent();
 

@@ -17,17 +17,26 @@ public class Gun : Item {
     }
 
     public override void PrimaryUseDown() {
-        RaycastHit hit;
-        Ray ray = new Ray(playerCam.position, playerCam.forward);
-        Debug.Log("Ray Sent");
-        if (Physics.Raycast(ray, out hit, bulletDistance, targetLayer)) {
-            Debug.Log("Target hit");
+    RaycastHit hit;
+    Ray ray = new Ray(playerCam.position, playerCam.forward);
+    Debug.Log("Ray Sent");
+    if (Physics.Raycast(ray, out hit, bulletDistance, targetLayer)) {
+        Debug.Log("Target hit");
+        
+        if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Enemy")) {
+            StateControl stateControl = hit.transform.gameObject.GetComponent<StateControl>();
+            if (stateControl != null) {
+                stateControl.TakeDamage(transform); 
+            }
+        } else { 
             Health hp = hit.transform.gameObject.GetComponent<Health>();
             if (hp != null) {
-                hp.AdjustHP((int) Random.Range(damageRange.x, damageRange.y));
+                hp.AdjustHP(-1 * (int)Random.Range(damageRange.x, damageRange.y));
             }
         }
     }
+}
+
 
     public override void PrimaryUseUp() {
         // Stop Aiming
