@@ -57,7 +57,7 @@ public class Inventory : NetworkBehaviour {
 
             if (newItem == null) { return;}
 
-            Destroy(worldItem);
+            Destroy(worldItem); // Not quite, should be simple fix tho. Needs to delete for all clients
             m_items[m_heldItemIndex] = newItem;
         }
     }
@@ -76,7 +76,7 @@ public class Inventory : NetworkBehaviour {
         NetworkObject netObj = newItem.GetComponent<NetworkObject>();
         netObj.Spawn();
 
-        Destroy(itemToDrop);
+        Destroy(itemToDrop); 
         m_items[m_heldItemIndex] = null;
     }
 
