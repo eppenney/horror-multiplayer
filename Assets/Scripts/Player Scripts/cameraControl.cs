@@ -4,22 +4,15 @@ using Cinemachine;
 
 public class cameraControl : NetworkBehaviour
 {
-    [SerializeField]
-    private GameObject cam;
-    private GameObject m_cam;
-    [SerializeField]
-    private Vector3 leanOffset;
-    [SerializeField]
-    private float leanThreshold = 0.05f;
+    [SerializeField] private GameObject cam;
+    private GameObject m_cam; 
+    [SerializeField] private Vector3 leanOffset;
+    [SerializeField] private float leanThreshold = 0.05f;
     private Vector3 originalPosition;
-    [SerializeField]
-    private float leanSpeed = 5.0f;
-    [SerializeField]
-    private Vector3 turnAngle;
-    [SerializeField]
-    private float turnSpeed = 5.0f;
-    [SerializeField]
-    private float turnThreshold = 0.05f;
+    [SerializeField] private float leanSpeed = 5.0f;
+    [SerializeField] private Vector3 turnAngle;
+    [SerializeField] private float turnSpeed = 5.0f;
+    [SerializeField] private float turnThreshold = 0.05f;
     private CinemachineCameraOffset cinemachineCameraOffset;
     private bool isLeaningLeft, isLeaningRight, isTurning;
     float currentYRotation = 0.0f;

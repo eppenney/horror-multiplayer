@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 155300218649851095}
   - component: {fileID: 7469568885819700159}
   - component: {fileID: 4605587442713055942}
-  - component: {fileID: 2199060834933649481}
+  - component: {fileID: 4403202545921658112}
   m_Layer: 9
   m_Name: Bottle
   m_TagString: Untagged
@@ -124,8 +124,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2317436891
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 52798749
+  InScenePlacedSourceGlobalObjectIdHash: 3634017752
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -203,7 +203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2199060834933649481
+--- !u!114 &4403202545921658112
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -212,7 +212,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 783324754609938761}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbed54987e2fdd44887d00962f032d9a, type: 3}
+  m_Script: {fileID: 11500000, guid: 52563a0120c8e5a4588000f4c057b92f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  throwForce: 10
+  defaultID: throwable_bottle
