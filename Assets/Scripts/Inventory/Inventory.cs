@@ -148,11 +148,6 @@ public class Inventory : NetworkBehaviour {
     }
 
     [ServerRpc]
-    public void SpawnProjectileItemServerRpc(string p_id) {
-
-    }
-
-    [ServerRpc]
     public void DestroyPlayerItemServerRpc() {
         DestroyPlayerItemClientRpc();
     }
@@ -171,5 +166,29 @@ public class Inventory : NetworkBehaviour {
         }
 
         m_items[m_heldItemIndex.Value] = null;
+    }
+
+    [ServerRpc]
+    public void SpawnProjectileServerRpc(string p_id, float p_force, Vector3 p_direction)
+    {
+        ItemPrefab itemPrefab = ItemManager.Instance.GetItemPrefabByID(p_id);
+        if (itemPrefab == null) { return; }
+
+        GameObject p_projectile = Instantiate(itemPrefab.projectilePrefab, heldPosition.position, heldPosition.rotation);
+
+        NetworkObject netObj = p_projectile.GetComponent<NetworkObject>();
+
+        if (netObj != null)
+        {
+            netObj.Spawn();
+
+            Rigidbody rb = p_projectile.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.isKinematic = false;
+                rb.velocity = Vector3.zero;
+                rb.AddForce(p_direction * p_force, ForceMode.VelocityChange);
+            }
+        }
     }
 }

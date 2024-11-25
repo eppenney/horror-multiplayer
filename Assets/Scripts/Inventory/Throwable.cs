@@ -1,4 +1,6 @@
 using UnityEngine;
+using Unity.Netcode;
+
 
 public class Throwable : Item {
     [SerializeField] private float throwForce = 10f;
@@ -33,13 +35,8 @@ public class Throwable : Item {
 
     private void Throw() {
         Debug.Log("Thrown!");
-        if (true) {
-            Rigidbody rb = GetComponent<Rigidbody>();
-            if (rb != null) {
-                rb.isKinematic = false;
-                rb.velocity = Vector3.zero;
-                rb.AddForce(playerCam.forward * throwForce, ForceMode.VelocityChange);
-            }
-        }
+        transform.parent.parent.GetComponent<Inventory>().SpawnProjectileServerRpc(ID, throwForce, playerCam.forward);
     }
+
+    
 }
