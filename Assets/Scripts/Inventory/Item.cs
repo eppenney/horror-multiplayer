@@ -1,12 +1,12 @@
 using UnityEngine;
 
 public class Item : MonoBehaviour {
-    [SerializeField] private string defaultID = "DefaultID"; 
+    [SerializeField] private string id_value = "DefaultID"; 
     public string ID { get; private set; }
 
     void OnEnable()
     {
-        ID = defaultID;
+        ID = id_value;
     }
 
     public virtual void PrimaryUseUp() {}

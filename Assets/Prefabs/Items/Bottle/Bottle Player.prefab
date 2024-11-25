@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8194583308463729248
+--- !u!1 &2164686396882435474
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,47 +8,47 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6268734860361362854}
-  - component: {fileID: 6332654470431140678}
-  - component: {fileID: 5597574310828728163}
-  - component: {fileID: 2224307102237274233}
+  - component: {fileID: 1843815373742020132}
+  - component: {fileID: 8438329496570164324}
+  - component: {fileID: 2385233935618065041}
+  - component: {fileID: 6683165417542578350}
   m_Layer: 9
-  m_Name: Gun Player
+  m_Name: Bottle Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6268734860361362854
+--- !u!4 &1843815373742020132
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8194583308463729248}
+  m_GameObject: {fileID: 2164686396882435474}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.11, y: 0.194, z: -1.89}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalPosition: {x: -0.242, y: 0.469, z: -2.182}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &6332654470431140678
+--- !u!33 &8438329496570164324
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8194583308463729248}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &5597574310828728163
+  m_GameObject: {fileID: 2164686396882435474}
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &2385233935618065041
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8194583308463729248}
+  m_GameObject: {fileID: 2164686396882435474}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -84,23 +84,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &2224307102237274233
+--- !u!114 &6683165417542578350
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8194583308463729248}
+  m_GameObject: {fileID: 2164686396882435474}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26b242ae223f7d9489b7ff9de3754448, type: 3}
+  m_Script: {fileID: 11500000, guid: bbed54987e2fdd44887d00962f032d9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id_value: gun_default
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 384
-  maxBullets: 6
-  currentBullets: 6
-  bulletDistance: 100
-  damageRange: {x: 10, y: 40}
+  id_value: throwable_bottle
+  throwForce: 10

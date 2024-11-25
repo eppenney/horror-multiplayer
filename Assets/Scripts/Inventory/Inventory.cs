@@ -55,12 +55,12 @@ public class Inventory : NetworkBehaviour {
         GameObject worldItem = GetItem();
         if (worldItem == null) return;
 
-        PickUp p_itemComponent = worldItem.GetComponent<PickUp>();
+        WorldItem p_itemComponent = worldItem.GetComponent<WorldItem>();
         if (p_itemComponent == null) return; 
 
         // Spawn player item
         string item_id = p_itemComponent.ID;
-        SpawnPlayerItemOnServerRpc(item_id);
+        SpawnPlayerItemServerRpc(item_id);
 
         // Delete world Item
         NetworkObject worldItemNetObj = worldItem.GetComponent<NetworkObject>();
@@ -112,7 +112,7 @@ public class Inventory : NetworkBehaviour {
     }
 
     [ServerRpc]
-    private void SpawnPlayerItemOnServerRpc(string p_id) {
+    private void SpawnPlayerItemServerRpc(string p_id) {
         ItemPrefab itemPrefab = ItemManager.Instance.GetItemPrefabByID(p_id);
         if (itemPrefab == null) { return; }
 
@@ -148,7 +148,12 @@ public class Inventory : NetworkBehaviour {
     }
 
     [ServerRpc]
-    private void DestroyPlayerItemServerRpc() {
+    public void SpawnProjectileItemServerRpc(string p_id) {
+
+    }
+
+    [ServerRpc]
+    public void DestroyPlayerItemServerRpc() {
         DestroyPlayerItemClientRpc();
     }
 
