@@ -9,11 +9,12 @@ using Unity.Services.Authentication;
 using TMPro;
  
 
-public class basicManager : MonoBehaviour
+public class BasicManager : MonoBehaviour
 {
-    public static basicManager Instance { get; private set; }
+    public static BasicManager Instance { get; private set; }
     private NetworkManager m_NetworkManager;
     [SerializeField] private string m_sceneName; 
+    public string joinCode {get; private set;}
 
     private async void Awake()
     {
@@ -56,7 +57,7 @@ public class basicManager : MonoBehaviour
         {
             try {
                 Allocation allocation = await RelayService.Instance.CreateAllocationAsync(4);
-                string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+                joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
                 Debug.Log("Join Code:" + joinCode);
 
                 var relayServerData = new Unity.Networking.Transport.Relay.RelayServerData(allocation, "dtls");
@@ -70,12 +71,12 @@ public class basicManager : MonoBehaviour
         }
     }
 
-    public async void JoinGame(string joinCode) {
+    public async void JoinGame(string p_joinCode) {
         if (!m_NetworkManager.IsClient && !m_NetworkManager.IsServer)
         {
             try
             {
-                JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+                JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(p_joinCode);
 
                 var relayServerData = new Unity.Networking.Transport.Relay.RelayServerData(joinAllocation, "dtls");
 
