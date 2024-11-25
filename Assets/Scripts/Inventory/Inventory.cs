@@ -29,7 +29,6 @@ public class Inventory : NetworkBehaviour {
         if (!IsOwner) { return; }
 
         Inputs();
-        SetItemsToHeldPosition();
     }
 
     private void Inputs() {
@@ -61,7 +60,7 @@ public class Inventory : NetworkBehaviour {
 
         // Spawn player item
         string item_id = p_itemComponent.ID;
-        SpawnPlayerItem(item_id);
+        SpawnPlayerItemOnServerRpc(item_id);
 
         // Delete world Item
         NetworkObject worldItemNetObj = worldItem.GetComponent<NetworkObject>();
@@ -79,12 +78,10 @@ public class Inventory : NetworkBehaviour {
     
         Item p_itemComponent = itemToDrop.GetComponent<Item>();
         if (p_itemComponent == null) { return; }
-
         string item_id = p_itemComponent.ID;
-        SpawnWorldItem(item_id);
 
+        SpawnWorldItemServerRpc(item_id);
         DestroyPlayerItemServerRpc();
-
     }
 
     private void ChangeItem() {
@@ -114,23 +111,6 @@ public class Inventory : NetworkBehaviour {
         }
     }
 
-    private void SetItemsToHeldPosition() {
-        foreach (GameObject item in m_items) {
-            if (item != null) {
-                item.transform.position = heldPosition.position;
-                item.transform.rotation = heldPosition.rotation;
-            }
-        }
-    }
-
-    private void SpawnPlayerItem(string p_id) {
-        ItemPrefab itemPrefab = ItemManager.Instance.GetItemPrefabByID(p_id);
-        if (itemPrefab == null) { return; }
-
-        // Request the server to spawn the item
-        SpawnPlayerItemOnServerRpc(p_id);
-    }
-
     [ServerRpc]
     private void SpawnPlayerItemOnServerRpc(string p_id) {
         ItemPrefab itemPrefab = ItemManager.Instance.GetItemPrefabByID(p_id);
@@ -154,10 +134,6 @@ public class Inventory : NetworkBehaviour {
         m_items[m_heldItemIndex.Value] = p_characterRep;   
     }
 
-    private void SpawnWorldItem(string p_id) {
-        SpawnWorldItemServerRpc(p_id);
-    }
-
     [ServerRpc]
     private void SpawnWorldItemServerRpc(string p_id) {
         ItemPrefab itemPrefab = ItemManager.Instance.GetItemPrefabByID(p_id);
@@ -171,7 +147,7 @@ public class Inventory : NetworkBehaviour {
         if (netObj != null) netObj.Spawn();
     }
 
-    [ServerRpc(RequireOwnership=false)]
+    [ServerRpc]
     private void DestroyPlayerItemServerRpc() {
         DestroyPlayerItemClientRpc();
     }
