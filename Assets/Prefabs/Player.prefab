@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1809564215
+  GlobalObjectIdHash: 1089569840
   InScenePlacedSourceGlobalObjectIdHash: 1089569840
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
@@ -284,7 +284,7 @@ MonoBehaviour:
   SyncPositionY: 0
   SyncPositionZ: 1
   SyncRotAngleX: 0
-  SyncRotAngleY: 0
+  SyncRotAngleY: 1
   SyncRotAngleZ: 0
   SyncScaleX: 0
   SyncScaleY: 0
@@ -371,12 +371,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_items: []
-  m_heldItemIndex: 0
+  m_heldItemIndex:
+    m_InternalValue: 0
   interactDistance: 4
   itemLayer:
     serializedVersion: 2
     m_Bits: 512
-  itemContainer: {fileID: 7285416845091824802}
   heldPosition: {fileID: 8541138079492057865}
   defaultThrowForce: 100
 --- !u!114 &-3504225447472487806

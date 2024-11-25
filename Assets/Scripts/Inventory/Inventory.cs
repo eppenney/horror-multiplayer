@@ -2,9 +2,15 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
 
+public enum ItemPrefabType {
+    Player,
+    World,
+    Projectile
+}
+
 public class Inventory : NetworkBehaviour {
     [SerializeField] private List<GameObject> m_items = new List<GameObject>(4);
-    [SerializeField] private int m_heldItemIndex = 0;
+    [SerializeField] private NetworkVariable<int> m_heldItemIndex = new NetworkVariable<int>();
     [SerializeField] private float interactDistance = 1.0f;
     [SerializeField] private LayerMask itemLayer;
     [SerializeField] private Transform heldPosition;
@@ -27,7 +33,7 @@ public class Inventory : NetworkBehaviour {
     }
 
     private void Inputs() {
-        if (m_items[m_heldItemIndex] != null) {
+        if (m_items[m_heldItemIndex.Value] != null) {
             UseItems();
             if (Input.GetKeyDown(KeyCode.F)) Drop();
         } else {
@@ -48,55 +54,56 @@ public class Inventory : NetworkBehaviour {
 
     private void PickUp() {
         GameObject worldItem = GetItem();
-        if (worldItem != null) {
-            PickUp p_itemComponent = worldItem.GetComponent<PickUp>();
-            if (p_itemComponent == null) { return; }
+        if (worldItem == null) return;
 
-            string item_id = p_itemComponent.ID;
-            GameObject newItem = SpawnPlayerItem(item_id);
+        PickUp p_itemComponent = worldItem.GetComponent<PickUp>();
+        if (p_itemComponent == null) return; 
 
-            if (newItem == null) { return;}
+        // Spawn player item
+        string item_id = p_itemComponent.ID;
+        SpawnPlayerItem(item_id);
 
-            Destroy(worldItem); // Not quite, should be simple fix tho. Needs to delete for all clients
-            m_items[m_heldItemIndex] = newItem;
+        // Delete world Item
+        NetworkObject worldItemNetObj = worldItem.GetComponent<NetworkObject>();
+        if (worldItemNetObj != null) {
+            ulong networkId = worldItemNetObj.NetworkObjectId;
+            ItemManager.Instance.DeleteItemServerRpc(networkId);
+        } else {
+            Destroy(worldItem);
         }
     }
 
     private void Drop() {
-        GameObject itemToDrop = m_items[m_heldItemIndex];
+        GameObject itemToDrop = m_items[m_heldItemIndex.Value];
         if (itemToDrop == null) { return; }
     
         Item p_itemComponent = itemToDrop.GetComponent<Item>();
         if (p_itemComponent == null) { return; }
 
         string item_id = p_itemComponent.ID;
-        ItemPrefab itemPrefab = ItemManager.Instance.GetItemPrefabByID(item_id);
-        GameObject newItem = Instantiate(itemPrefab.worldPrefab, transform.position + transform.forward, Quaternion.identity);
+        SpawnWorldItem(item_id);
 
-        NetworkObject netObj = newItem.GetComponent<NetworkObject>();
-        netObj.Spawn();
+        DestroyPlayerItemServerRpc();
 
-        Destroy(itemToDrop); 
-        m_items[m_heldItemIndex] = null;
     }
 
     private void ChangeItem() {
-        int start_index = m_heldItemIndex;
+        int start_index = m_heldItemIndex.Value;
         if (m_items == null) { return; }
-        if (Input.GetKeyDown(KeyCode.Alpha1)) m_heldItemIndex = 0;
-        else if (Input.GetKeyDown(KeyCode.Alpha2)) m_heldItemIndex = 1;
-        else if (Input.GetKeyDown(KeyCode.Alpha3)) m_heldItemIndex = 2;
-        else if (Input.GetKeyDown(KeyCode.Alpha4)) m_heldItemIndex = 3;
+        if (Input.GetKeyDown(KeyCode.Alpha1)) m_heldItemIndex.Value = 0;
+        else if (Input.GetKeyDown(KeyCode.Alpha2)) m_heldItemIndex.Value = 1;
+        else if (Input.GetKeyDown(KeyCode.Alpha3)) m_heldItemIndex.Value = 2;
+        else if (Input.GetKeyDown(KeyCode.Alpha4)) m_heldItemIndex.Value = 3;
 
-        if (start_index == m_heldItemIndex) { return;}
+        if (start_index == m_heldItemIndex.Value) { return;}
         for (int i = 0; i < m_items.Count; i++) {
             if (m_items[i] == null) { continue; }
-            m_items[i].SetActive(i == m_heldItemIndex);
+            m_items[i].SetActive(i == m_heldItemIndex.Value);
         }
     }
 
     private void UseItems() {
-        GameObject currentItem = m_items[m_heldItemIndex];
+        GameObject currentItem = m_items[m_heldItemIndex.Value];
         if (currentItem == null) return;
         Item p_item = currentItem.GetComponent<Item>();
         if (p_item != null) {
@@ -116,17 +123,72 @@ public class Inventory : NetworkBehaviour {
         }
     }
 
-    private GameObject SpawnPlayerItem(string p_id) {
+    private void SpawnPlayerItem(string p_id) {
         ItemPrefab itemPrefab = ItemManager.Instance.GetItemPrefabByID(p_id);
+        if (itemPrefab == null) { return; }
 
-        if (itemPrefab == null) { return null; }
+        // Request the server to spawn the item
+        SpawnPlayerItemOnServerRpc(p_id);
+    }
 
-        // Spawn or instantiate the characterRepresentation at the held position on all clients
-        GameObject p_characterRep = Instantiate(itemPrefab.playerPrefab);
+    [ServerRpc]
+    private void SpawnPlayerItemOnServerRpc(string p_id) {
+        ItemPrefab itemPrefab = ItemManager.Instance.GetItemPrefabByID(p_id);
+        if (itemPrefab == null) { return; }
+
+        SpawnPlayerItemClientRpc(p_id);
+    }
+
+    [ClientRpc]
+    private void SpawnPlayerItemClientRpc(string p_id) {
+        ItemPrefab itemPrefab = ItemManager.Instance.GetItemPrefabByID(p_id);
+        if (itemPrefab == null) { return; }
+
+        // Spawn the item on the server
+        GameObject p_characterRep = Instantiate(itemPrefab.playerPrefab);     
+
         p_characterRep.transform.SetParent(heldPosition);
         p_characterRep.transform.localPosition = Vector3.zero;
         p_characterRep.transform.localRotation = Quaternion.identity;
 
-        return p_characterRep;
+        m_items[m_heldItemIndex.Value] = p_characterRep;   
+    }
+
+    private void SpawnWorldItem(string p_id) {
+        SpawnWorldItemServerRpc(p_id);
+    }
+
+    [ServerRpc]
+    private void SpawnWorldItemServerRpc(string p_id) {
+        ItemPrefab itemPrefab = ItemManager.Instance.GetItemPrefabByID(p_id);
+        if (itemPrefab == null) { return; }
+
+        GameObject p_worldRep = Instantiate(itemPrefab.worldPrefab);
+        p_worldRep.transform.position = transform.position + transform.forward;
+        p_worldRep.transform.rotation = transform.rotation;
+
+        NetworkObject netObj = p_worldRep.GetComponent<NetworkObject>();
+        if (netObj != null) netObj.Spawn();
+    }
+
+    [ServerRpc(RequireOwnership=false)]
+    private void DestroyPlayerItemServerRpc() {
+        DestroyPlayerItemClientRpc();
+    }
+
+    [ClientRpc]
+    private void DestroyPlayerItemClientRpc() {
+        GameObject toDestroy = m_items[m_heldItemIndex.Value];
+
+        // Delete player Item
+        NetworkObject playerItemNetObj = toDestroy.GetComponent<NetworkObject>();
+        if (playerItemNetObj != null) {
+            ulong networkId = playerItemNetObj.NetworkObjectId;
+            ItemManager.Instance.DeleteItemServerRpc(networkId);
+        } else {
+            Destroy(toDestroy);
+        }
+
+        m_items[m_heldItemIndex.Value] = null;
     }
 }

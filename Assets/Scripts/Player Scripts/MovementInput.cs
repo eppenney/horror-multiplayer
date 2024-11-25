@@ -1,5 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
+using System;
 
 [RequireComponent(typeof(CharacterController))]
 
@@ -34,7 +35,13 @@ public class MovementInput : NetworkBehaviour
     private void Initialize()
     {
         if (controller == null) controller = GetComponent<CharacterController>();
-        if (head == null) head = GetComponent<cameraControl>().GetCamera().transform;
+        if (head == null) {
+            try {
+                head = GetComponent<cameraControl>().GetCamera().transform;
+            } catch (NullReferenceException) {
+
+            }
+        }
         Cursor.lockState = CursorLockMode.Locked;
     }
 

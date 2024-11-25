@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class ItemManager : MonoBehaviour
+
+public class ItemManager : NetworkBehaviour
 {
     public static ItemManager Instance { get; private set;}
     private Dictionary<string, ItemPrefab> itemDictionary; 
@@ -43,6 +45,19 @@ public class ItemManager : MonoBehaviour
         {
             Debug.LogError($"Item with ID {itemID} not found!");
             return null;
+        }
+    }
+
+    [ServerRpc(RequireOwnership=false)]
+    public void DeleteItemServerRpc(ulong p_id) {
+        NetworkObject networkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[p_id];
+        if (networkObject != null)
+        {
+            networkObject.Despawn(true); 
+        }
+        else
+        {
+            Debug.LogWarning($"Server: NetworkObject with ID {p_id} not found.");
         }
     }
 }
