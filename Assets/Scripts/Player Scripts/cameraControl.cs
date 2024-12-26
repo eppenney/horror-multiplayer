@@ -5,6 +5,7 @@ using Cinemachine;
 public class cameraControl : NetworkBehaviour
 {
     [SerializeField] private GameObject cam;
+    [SerializeField] private Transform head;
     private GameObject m_cam; 
     [SerializeField] private Vector3 leanOffset;
     [SerializeField] private float leanThreshold = 0.05f;
@@ -23,11 +24,12 @@ public class cameraControl : NetworkBehaviour
         if (!IsOwner) { return; }
         if (m_cam == null) {
             m_cam = Instantiate(cam);
-            m_cam.transform.SetParent(transform);
+            m_cam.transform.SetParent(head);
+            m_cam.transform.localPosition = Vector3.zero;
             m_cam = m_cam.transform.GetChild(0).gameObject;
             m_cam.GetComponent<CinemachineVirtualCamera>().Follow = transform;
             cinemachineCameraOffset = m_cam.GetComponent<CinemachineCameraOffset>();
-            originalPosition = m_cam.transform.position;
+            originalPosition = m_cam.transform.localPosition;
         }
     }
 

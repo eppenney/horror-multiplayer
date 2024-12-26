@@ -1559,7 +1559,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c07962ad07bc1764c8c7513739df0aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_sceneName: Test Level
+  m_sceneName: Lobby
 --- !u!114 &1752654805
 MonoBehaviour:
   m_ObjectHideFlags: 0
