@@ -6,14 +6,20 @@ public class SpawnAtPoint : NetworkBehaviour
     public static int spawnIndex = 0;  // Static index for cycling through spawn points
     public Vector3[] spawnPoints;    // Array of spawn points
 
+    private bool initialized = false;
 
-    private void OnNetworkSpawn()
-    {
-        if (IsLocalPlayer)  // Only spawn for the local player
+    void Initialize() {
+        if (IsOwner)  // Only spawn for the local player
         {
             Vector3 spawnPosition = GetSpawnPosition();
             transform.position = spawnPosition;
+            initialized = true;
         }
+    }
+
+    private void OnNetworkSpawn()
+    {
+        Initialize();
     }
 
     private Vector3 GetSpawnPosition()
@@ -25,5 +31,11 @@ public class SpawnAtPoint : NetworkBehaviour
         spawnIndex = (spawnIndex + 1) % spawnPoints.Length;
 
         return spawnPosition;
+    }
+
+    void Update() {
+        if (!initialized) {
+            Initialize();
+        }
     }
 }
