@@ -129,7 +129,7 @@ public class Inventory : NetworkBehaviour {
 
         p_characterRep.transform.SetParent(heldPosition);
         p_characterRep.transform.localPosition = Vector3.zero;
-        p_characterRep.transform.localRotation = Quaternion.identity;
+        p_characterRep.transform.localRotation = itemPrefab.playerPrefab.transform.rotation;
 
         m_items[m_heldItemIndex.Value] = p_characterRep;   
     }

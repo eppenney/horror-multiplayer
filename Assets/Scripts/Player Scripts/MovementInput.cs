@@ -22,7 +22,7 @@ public class MovementInput : NetworkBehaviour
     private bool isCrouching = false;
 
     // Movements 
-    [SerializeField] private Transform head; 
+    [SerializeField] private Transform cameraTransform; 
     [SerializeField] private float maxUpAngle = 60f; 
     [SerializeField] private float maxDownAngle = 60f;
     [SerializeField] private float horizontalSensitivity = 2f;     
@@ -35,9 +35,9 @@ public class MovementInput : NetworkBehaviour
     private void Initialize()
     {
         if (controller == null) controller = GetComponent<CharacterController>();
-        if (head == null) {
+        if (cameraTransform == null) {
             try {
-                head = GetComponent<cameraControl>().GetCamera().transform;
+                cameraTransform = GetComponent<cameraControl>().GetCamera().transform;
             } catch (NullReferenceException) {
 
             }
@@ -135,7 +135,7 @@ public class MovementInput : NetworkBehaviour
         verticalRotation -= mouseY * verticalSensitivity;
         verticalRotation = Mathf.Clamp(verticalRotation, -maxDownAngle, maxUpAngle);
 
-        // Apply vertical rotation to the head
-        head.localRotation = Quaternion.Euler(new Vector3(verticalRotation, head.localRotation.eulerAngles.y, head.localRotation.eulerAngles.z));
+        // Apply vertical rotation to the cameraTransform
+        cameraTransform.localRotation = Quaternion.Euler(new Vector3(verticalRotation, cameraTransform.localRotation.eulerAngles.y, cameraTransform.localRotation.eulerAngles.z));
     }
 }

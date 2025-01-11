@@ -1559,7 +1559,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c07962ad07bc1764c8c7513739df0aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_sceneName: Lobby
+  m_sceneName: Psychology Department
 --- !u!114 &1752654805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1984,12 +1984,16 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2075162794658389055, guid: 5461aefdec556d145affe7e897457cda, type: 3}
       propertyPath: allItemPrefabs.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2075162794658389055, guid: 5461aefdec556d145affe7e897457cda, type: 3}
       propertyPath: allItemPrefabs.Array.data[1]
       value: 
       objectReference: {fileID: 11400000, guid: f3a6c813614600b4e97becacc7fdfa6e, type: 2}
+    - target: {fileID: 2075162794658389055, guid: 5461aefdec556d145affe7e897457cda, type: 3}
+      propertyPath: allItemPrefabs.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: f23cbd946362c844c9863357c63b6b7d, type: 2}
     - target: {fileID: 2147939049905389546, guid: 5461aefdec556d145affe7e897457cda, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5.29452
