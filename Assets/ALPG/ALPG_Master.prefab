@@ -1,0 +1,111 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &344994477207046294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 8821523941937876761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef206a65865b9ae418c4dbf2ebe505e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  colLayers:
+    serializedVersion: 2
+    m_Bits: 131073
+  visLayers:
+    serializedVersion: 2
+    m_Bits: 131073
+  navLayers:
+    serializedVersion: 2
+    m_Bits: 131073
+  mergeDistance: 0.75
+  mergeAirDistance: 6
+  floorOffset: 0.25
+  heightDistanceCheck: 6
+  collisionCheckSize: 0.05
+  clusterCount: 49
+  MergeThroughCollision: 1
+  tagCheck: 1
+  visCheck: 0
+  visCheckHeight: 22
+  showProcess: 0
+  probeObject: {fileID: 8821523941937876761}
+  probeZoneObject: {fileID: 8821523941568245744}
+  UseLightProbeNavMesh: 0
+  ForceRebuildNavMesh: 0
+  m_AgentTypeID: 0
+  navTileSize: 48
+  calculateNavmesh: 0
+--- !u!1 &8821523941568245744
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 8821523941568245745}
+  - component: {fileID: 8821523941568245746}
+  m_Layer: 2
+  m_Name: ALPG_ProbeZone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8821523941568245745
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 8821523941568245744}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8821523941937876763}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &8821523941568245746
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 8821523941568245744}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 100, y: 50, z: 100}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8821523941937876761
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 8821523941937876763}
+  - component: {fileID: 344994477207046294}
+  m_Layer: 0
+  m_Name: ALPG_Master
+  m_TagString: Untagged
+  m_Icon: {fileID: 2800000, guid: c845247b2cf74874e898357ae14df101, type: 3}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8821523941937876763
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 8821523941937876761}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8821523941568245745}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

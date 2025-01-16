@@ -140,4 +140,22 @@ public class BasicManager : MonoBehaviour
           }
       }
     }
+
+    public void LeaveGame()
+    {
+        // Check if the NetworkManager is active
+        if (m_NetworkManager.IsClient || m_NetworkManager.IsServer)
+        {
+            // Shut down the NetworkManager
+            m_NetworkManager.Shutdown();
+            Debug.Log("Network session ended.");
+        }
+
+        // Reset the join code (optional, for UI purposes)
+        joinCode = null;
+
+        // Load the main menu or default scene
+        SceneManager.LoadScene("Menu"); // Replace "MainMenu" with your main menu scene name
+    }
+
 }
