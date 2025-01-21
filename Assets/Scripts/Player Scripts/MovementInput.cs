@@ -37,7 +37,7 @@ public class MovementInput : NetworkBehaviour
         if (controller == null) controller = GetComponent<CharacterController>();
         if (cameraTransform == null) {
             try {
-                cameraTransform = GetComponent<cameraControl>().GetCamera().transform;
+                cameraTransform = GetComponent<CameraControl>().GetCamera().transform;
             } catch (NullReferenceException) {
 
             }

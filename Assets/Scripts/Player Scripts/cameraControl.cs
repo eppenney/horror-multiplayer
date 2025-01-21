@@ -2,7 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 using Cinemachine;
 
-public class cameraControl : NetworkBehaviour
+public class CameraControl : NetworkBehaviour
 {
     [SerializeField] private GameObject cam;
     [SerializeField] private Transform head;

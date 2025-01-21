@@ -3,7 +3,7 @@ using Unity.Netcode;
 using System;
 
 public class FollowHead : NetworkBehaviour {
-    [SerializeField] private cameraControl m_cameraControl; 
+    [SerializeField] private CameraControl m_cameraControl; 
     [SerializeField] private Vector3 rotationMultiplier = new Vector3(0, 0, 1);
     private Transform cameraTransform; 
     private void Initialize()

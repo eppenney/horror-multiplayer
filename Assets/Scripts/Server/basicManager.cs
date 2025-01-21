@@ -12,7 +12,6 @@ using TMPro;
 public class BasicManager : MonoBehaviour
 {
     public static BasicManager Instance { get; private set; }
-    private NetworkManager m_NetworkManager;
     [SerializeField] private string m_sceneName; 
     public string joinCode {get; private set;}
 
@@ -27,8 +26,6 @@ public class BasicManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject); // Persist across scenes
         
-        m_NetworkManager = GetComponent<NetworkManager>();
-
         // Initialize Unity services
         // await UnityServices.InitializeAsync();
         await InitializeUnityServices();
@@ -53,7 +50,7 @@ public class BasicManager : MonoBehaviour
 
     public async void HostGame()
     {
-        if (!m_NetworkManager.IsClient && !m_NetworkManager.IsServer)
+        if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
         {
             try {
                 Allocation allocation = await RelayService.Instance.CreateAllocationAsync(4);
@@ -61,9 +58,9 @@ public class BasicManager : MonoBehaviour
                 Debug.Log("Join Code:" + joinCode);
 
                 var relayServerData = new Unity.Networking.Transport.Relay.RelayServerData(allocation, "dtls");
-                m_NetworkManager.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>().SetRelayServerData(relayServerData);
+                NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>().SetRelayServerData(relayServerData);
 
-                m_NetworkManager.StartHost();
+                NetworkManager.Singleton.StartHost();
             }
             catch (RelayServiceException e) {
                 Debug.LogError(e);
@@ -72,7 +69,7 @@ public class BasicManager : MonoBehaviour
     }
 
     public async void JoinGame(string p_joinCode) {
-        if (!m_NetworkManager.IsClient && !m_NetworkManager.IsServer)
+        if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
         {
             try
             {
@@ -80,9 +77,9 @@ public class BasicManager : MonoBehaviour
 
                 var relayServerData = new Unity.Networking.Transport.Relay.RelayServerData(joinAllocation, "dtls");
 
-                m_NetworkManager.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>().SetRelayServerData(relayServerData);
+                NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>().SetRelayServerData(relayServerData);
 
-                m_NetworkManager.StartClient();
+                NetworkManager.Singleton.StartClient();
             }
             catch (RelayServiceException e)
             {
@@ -92,7 +89,7 @@ public class BasicManager : MonoBehaviour
     }
 
     public async void JoinGame(TMP_InputField joinCodeInputField) {
-        if (!m_NetworkManager.IsClient && !m_NetworkManager.IsServer)
+        if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
         {
             string joinCode = joinCodeInputField.text.Trim();
 
@@ -107,9 +104,9 @@ public class BasicManager : MonoBehaviour
 
                 var relayServerData = new Unity.Networking.Transport.Relay.RelayServerData(joinAllocation, "dtls");
 
-                m_NetworkManager.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>().SetRelayServerData(relayServerData);
+                NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>().SetRelayServerData(relayServerData);
 
-                m_NetworkManager.StartClient();
+                NetworkManager.Singleton.StartClient();
             }
             catch (RelayServiceException e)
             {
@@ -121,7 +118,7 @@ public class BasicManager : MonoBehaviour
     private async Task WaitUntilNetworkIsReady()
     {
         // Wait until the network is ready (host or client is connected)
-        while (!m_NetworkManager.IsListening)
+        while (!NetworkManager.Singleton.IsListening)
         {
             await Task.Delay(100); // Poll every 100ms
         }
@@ -130,24 +127,24 @@ public class BasicManager : MonoBehaviour
 
     public async void LoadScene() {
         await WaitUntilNetworkIsReady();
-        if (m_NetworkManager.IsServer && !string.IsNullOrEmpty(m_sceneName))
-      {
-          var status = m_NetworkManager.SceneManager.LoadScene(m_sceneName, LoadSceneMode.Single);
-          if (status != SceneEventProgressStatus.Started)
-          {
-              Debug.LogWarning($"Failed to load {m_sceneName} " +
-                    $"with a {nameof(SceneEventProgressStatus)}: {status}");
-          }
-      }
+        if (NetworkManager.Singleton.IsServer && !string.IsNullOrEmpty(m_sceneName))
+        {
+            var status = NetworkManager.Singleton.SceneManager.LoadScene(m_sceneName, LoadSceneMode.Single);
+            if (status != SceneEventProgressStatus.Started)
+            {
+                Debug.LogWarning($"Failed to load {m_sceneName} " +
+                        $"with a {nameof(SceneEventProgressStatus)}: {status}");
+            }
+        }
     }
 
     public void LeaveGame()
     {
         // Check if the NetworkManager is active
-        if (m_NetworkManager.IsClient || m_NetworkManager.IsServer)
+        if (NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsServer)
         {
             // Shut down the NetworkManager
-            m_NetworkManager.Shutdown();
+            NetworkManager.Singleton.Shutdown();
             Debug.Log("Network session ended.");
         }
 
@@ -158,4 +155,21 @@ public class BasicManager : MonoBehaviour
         SceneManager.LoadScene("Menu"); // Replace "MainMenu" with your main menu scene name
     }
 
+    public GameObject GetPlayerObject(ulong clientId)
+    {
+        foreach (var networkObject in NetworkManager.Singleton.SpawnManager.SpawnedObjectsList)
+        {
+            if (networkObject.OwnerClientId == clientId)
+            {
+                return networkObject.gameObject;
+            }
+        }
+        Debug.LogWarning($"No player object found for client ID {clientId}.");
+        return null;
+    }
+
+    public GameObject GetPlayerObject()
+    {
+        return GetPlayerObject(NetworkManager.Singleton.LocalClientId);
+    }
 }
