@@ -89,30 +89,31 @@ public class BasicManager : MonoBehaviour
     }
 
     public async void JoinGame(TMP_InputField joinCodeInputField) {
-        if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
-        {
-            string joinCode = joinCodeInputField.text.Trim();
+        // if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
+        // {
+        string joinCode = joinCodeInputField.text.Trim();
+        await JoinGame(joinCode);
 
-            if (string.IsNullOrEmpty(joinCode))
-            {
-                Debug.LogWarning("Join code is empty. Please enter a valid join code.");
-                return;
-            }
-            try
-            {
-                JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+        //     if (string.IsNullOrEmpty(joinCode))
+        //     {
+        //         Debug.LogWarning("Join code is empty. Please enter a valid join code.");
+        //         return;
+        //     }
+        //     try
+        //     {
+        //         JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-                var relayServerData = new Unity.Networking.Transport.Relay.RelayServerData(joinAllocation, "dtls");
+        //         var relayServerData = new Unity.Networking.Transport.Relay.RelayServerData(joinAllocation, "dtls");
 
-                NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>().SetRelayServerData(relayServerData);
+        //         NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>().SetRelayServerData(relayServerData);
 
-                NetworkManager.Singleton.StartClient();
-            }
-            catch (RelayServiceException e)
-            {
-                Debug.LogError(e);
-            }
-        }
+        //         NetworkManager.Singleton.StartClient();
+        //     }
+        //     catch (RelayServiceException e)
+        //     {
+        //         Debug.LogError(e);
+        //     }
+        // }
     }
 
     private async Task WaitUntilNetworkIsReady()

@@ -12,6 +12,10 @@ public class ManagerAccess : MonoBehaviour
         BasicManager.Instance.HostGame();
     }
 
+    public void JoinGame(TMP_InputField joinCodeInputField) {
+        BasicManager.Instance.JoinGame(joinCodeInputField);
+    }
+
     public void LoadScene() {
         BasicManager.Instance.LoadScene();
     }
