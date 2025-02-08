@@ -30,7 +30,7 @@ public class SpawnAtPoint : NetworkBehaviour
         {
             yield return null;  // Wait one frame
         }
-        yield return new WaitForSeconds(0.5f);  // Small delay for network sync
+        yield return new WaitForSeconds(1.5f);  // Small delay for network sync
         Initialize();
     }
 
@@ -71,5 +71,11 @@ public class SpawnAtPoint : NetworkBehaviour
 
     private bool IsAtSpawn() {
         return Vector3Int.RoundToInt(spawnPosition) == Vector3Int.RoundToInt(transform.position);
+    }
+
+    void Update() {
+        if (attempts++ < 100) {
+            Initialize();
+        }      
     }
 }

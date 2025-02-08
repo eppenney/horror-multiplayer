@@ -1834,8 +1834,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1752654804}
-        m_TargetAssemblyTypeName: basicManager, Assembly-CSharp
+      - m_Target: {fileID: 256799539}
+        m_TargetAssemblyTypeName: ManagerAccess, Assembly-CSharp
         m_MethodName: JoinGame
         m_Mode: 2
         m_Arguments:
