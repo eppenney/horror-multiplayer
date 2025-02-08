@@ -72,6 +72,8 @@ public class Inventory : NetworkBehaviour {
         } else {
             Destroy(worldItem);
         }
+
+        ChangeItem(true);
     }
 
     private void Drop() {
@@ -86,7 +88,7 @@ public class Inventory : NetworkBehaviour {
         DestroyPlayerItemServerRpc();
     }
 
-    private void ChangeItem() {
+    private void ChangeItem(bool forceUpdate = false) {
         int start_index = m_heldItemIndex.Value;
         if (m_items == null) { return; }
         if (Input.GetKeyDown(KeyCode.Alpha1)) m_heldItemIndex.Value = 0;
@@ -94,7 +96,7 @@ public class Inventory : NetworkBehaviour {
         else if (Input.GetKeyDown(KeyCode.Alpha3)) m_heldItemIndex.Value = 2;
         else if (Input.GetKeyDown(KeyCode.Alpha4)) m_heldItemIndex.Value = 3;
 
-        if (start_index == m_heldItemIndex.Value) { return;}
+        if (start_index == m_heldItemIndex.Value && !forceUpdate) { return;}
         for (int i = 0; i < m_items.Count; i++) {
             if (m_items[i] == null) { continue; }
             m_items[i].SetActive(i == m_heldItemIndex.Value);
