@@ -10,7 +10,9 @@ public enum ItemPrefabType {
 
 public class Inventory : NetworkBehaviour {
     [SerializeField] private List<GameObject> m_items = new List<GameObject>(4);
-    [SerializeField] private NetworkVariable<int> m_heldItemIndex = new NetworkVariable<int>();
+    // [SerializeField] private NetworkVariable<int> m_heldItemIndex = new NetworkVariable<int>();
+    [SerializeField] private NetworkVariable<int> m_heldItemIndex = new NetworkVariable<int>(
+    default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     [SerializeField] private float interactDistance = 1.0f;
     [SerializeField] private LayerMask itemLayer;
     [SerializeField] private Transform heldPosition;

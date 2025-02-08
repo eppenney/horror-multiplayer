@@ -306,7 +306,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1809564215
+  GlobalObjectIdHash: 1089569840
   InScenePlacedSourceGlobalObjectIdHash: 1089569840
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
@@ -508,7 +508,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e2afdaede3c649469b60581efc0d6c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lobbyScene: Menu
 --- !u!82 &2289578211616689778
 AudioSource:
   m_ObjectHideFlags: 0
@@ -645,3 +644,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnPoints:
   - {x: 10, y: 1, z: 4}
+  - {x: 12, y: 1, z: 4}

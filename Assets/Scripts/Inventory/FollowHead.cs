@@ -32,6 +32,7 @@ public class FollowHead : NetworkBehaviour {
     }
 
     void Update() {
+        if (!IsOwner) { return; }
         if (cameraTransform != null) {
             Vector3 eulerRotation = cameraTransform.rotation.eulerAngles;
             eulerRotation = Vector3.Scale(eulerRotation, rotationMultiplier); // Multiply by the rotationMultiplier

@@ -1,5 +1,11 @@
 using Unity.Netcode;
 using UnityEngine;
+using System.Collections;
+/*
+This script is currently working but it is getting around a problem in a messy way.
+I suspect the issue is that the player prefab is not fully spawned when the script runs. 
+As such, we wait with a coroutine. 
+*/
 
 public class SpawnAtPoint : NetworkBehaviour
 {
@@ -7,35 +13,63 @@ public class SpawnAtPoint : NetworkBehaviour
     public Vector3[] spawnPoints;    // Array of spawn points
 
     private bool initialized = false;
+    private Vector3 spawnPosition;
+
+    int attempts = 0;
 
     void Initialize() {
         if (IsOwner)  // Only spawn for the local player
         {
-            Vector3 spawnPosition = GetSpawnPosition();
-            transform.position = spawnPosition;
-            initialized = true;
+            AssignSpawnPositionServerRpc();
         }
     }
 
-    private void OnNetworkSpawn()
+    IEnumerator WaitForSpawn()
     {
+        while (!IsSpawned) 
+        {
+            yield return null;  // Wait one frame
+        }
+        yield return new WaitForSeconds(0.5f);  // Small delay for network sync
         Initialize();
+    }
+
+    void Start()
+    {
+        StartCoroutine(WaitForSpawn());
+    }
+
+    [ServerRpc]
+    private void AssignSpawnPositionServerRpc(ServerRpcParams rpcParams = default)
+    {
+        spawnPosition = GetSpawnPosition();
+        SetSpawnPositionClientRpc(spawnPosition);
+    }
+
+    [ClientRpc]
+    private void SetSpawnPositionClientRpc(Vector3 position)
+    {
+        if (!IsOwner) {return;}
+        Debug.Log($"[ClientRpc] Setting spawn position to: {position} for player {OwnerClientId}");
+        transform.position = position;
+        if (TryGetComponent(out NetworkObject netObj))
+        {
+            netObj.transform.position = position; // Ensure position is applied
+        }
+        initialized = true;
     }
 
     private Vector3 GetSpawnPosition()
     {
         // Get the spawn position based on the static spawn index
-        Vector3 spawnPosition = spawnPoints[spawnIndex];
+        spawnPosition = spawnPoints[spawnIndex];
 
-        // Increment the spawnIndex and reset it if it exceeds the number of spawn points
-        spawnIndex = (spawnIndex + 1) % spawnPoints.Length;
+        Debug.Log($"Using spawn point {spawnIndex}");
 
         return spawnPosition;
     }
 
-    void Update() {
-        if (!initialized) {
-            Initialize();
-        }
+    private bool IsAtSpawn() {
+        return Vector3Int.RoundToInt(spawnPosition) == Vector3Int.RoundToInt(transform.position);
     }
 }
