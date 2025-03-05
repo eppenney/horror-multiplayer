@@ -9,6 +9,9 @@ public class VivoxManager : MonoBehaviour
 {
     public static VivoxManager Instance { get; private set; }
     public string UserDisplayName;
+
+    private GameObject localPlayerObject;
+    float positionUpdateTimer = 0.5f;
     
     private void Awake()
     {
@@ -35,7 +38,15 @@ public class VivoxManager : MonoBehaviour
         
     }
 
-    async void InitializeAsync()
+    void FixedUpdate() {
+        positionUpdateTimer -= Time.deltaTime;
+        if (positionUpdateTimer < 0) {
+            positionUpdateTimer = 0.5f;
+            UpdatePlayerPosition();
+        }
+    }
+
+    async Task InitializeAsync()
     {
         await UnityServices.InitializeAsync();
         // await AuthenticationService.Instance.SignInAnonymouslyAsync();
@@ -63,16 +74,20 @@ public class VivoxManager : MonoBehaviour
         await VivoxService.Instance.LeaveChannelAsync(channelToLeave);
     }
 
-    public async void JoinPositionalChannelAsync() {
+    public async void JoinPositionalChannelAsync(GameObject p_playerObject) {
         string channelToJoin = "GlobalProximityChat";
 
         Channel3DProperties properties = new Channel3DProperties(
-            maxDistance: 20.0f,   // Maximum distance before voice fades out
-            minDistance: 2.0f,    // Minimum distance for full volume
-            rollOff: 1.0f         // Roll-off factor (higher = sharper drop-off)
+            audibleDistance: 20,  
+            conversationalDistance: 2,   
+            audioFadeIntensityByDistanceaudio: 1.0f,
+            audioFadeModel: Unity.Services.Vivox.AudioFadeModel.ExponentialByDistance
+
         );
 
         await VivoxService.Instance.JoinPositionalChannelAsync(channelToJoin, ChatCapability.TextAndAudio, properties);
+
+        localPlayerObject = p_playerObject;
     }
 
     public async void LeavePositionalChannelAsync() {
@@ -109,12 +124,9 @@ public class VivoxManager : MonoBehaviour
     /// Used to update player position in Vivox positional audio channels
     /// </summary>
     /// <param name="playerPosition"></param>
-    public async void UpdatePlayerPosition(Vector3 playerPosition)
+    public async void UpdatePlayerPosition()
     {
-        if (VivoxService.Instance.ActiveChannels.TryGetValue("GlobalProximityChat", out var session))
-        {
-            await session.SetChannelSessionPositionAsync(playerPosition);
-        }
+        VivoxService.Instance.Set3DPosition(localPlayerObject, "GlobalProximityChat");
     }
 
 }
