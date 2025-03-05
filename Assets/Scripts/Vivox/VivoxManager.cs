@@ -104,6 +104,11 @@ public class VivoxManager : MonoBehaviour
         Debug.Log($"Participant {participant.DisplayName} removed from channel");
     }
 
+    /// <summary>
+    /// Usage: VivoxManager.Instance.UpdatePlayerPosition(transform.position);
+    /// Used to update player position in Vivox positional audio channels
+    /// </summary>
+    /// <param name="playerPosition"></param>
     public async void UpdatePlayerPosition(Vector3 playerPosition)
     {
         if (VivoxService.Instance.ActiveChannels.TryGetValue("GlobalProximityChat", out var session))
