@@ -5,13 +5,27 @@ using Unity.Services.Core;
 using Unity.Services.Vivox;
 using System.Threading.Tasks;
 
-public class Initialize : MonoBehaviour
+public class VivoxManager : MonoBehaviour
 {
+    public static VivoxManager Instance { get; private set; }
     public string UserDisplayName;
-    // Start is called before the first frame update
-    async Task Start()
+    
+    private void Awake()
     {
-        InitializeAsync();
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // Persist across scenes
+        }
+        else
+        {
+            Destroy(gameObject); // Prevent duplicate instances
+        }
+    }
+
+    private async void Start()
+    {
+        await InitializeAsync();
         BindSessionEvents(true);
     }
 
@@ -39,13 +53,30 @@ public class Initialize : MonoBehaviour
 
     public async void JoinEchoChannelAsync()
     {
-        string channelToJoin = "Lobby";
+        string channelToJoin = "TestLobby";
         await VivoxService.Instance.JoinEchoChannelAsync(channelToJoin, ChatCapability.TextAndAudio);
     }
 
     public async void LeaveEchoChannelAsync()
     {
-        string channelToLeave = "Lobby";
+        string channelToLeave = "TestLobby";
+        await VivoxService.Instance.LeaveChannelAsync(channelToLeave);
+    }
+
+    public async void JoinPositionalChannelAsync() {
+        string channelToJoin = "GlobalProximityChat";
+
+        Channel3DProperties properties = new Channel3DProperties(
+            maxDistance: 20.0f,   // Maximum distance before voice fades out
+            minDistance: 2.0f,    // Minimum distance for full volume
+            rollOff: 1.0f         // Roll-off factor (higher = sharper drop-off)
+        );
+
+        await VivoxService.Instance.JoinPositionalChannelAsync(channelToJoin, ChatCapability.TextAndAudio, properties);
+    }
+
+    public async void LeavePositionalChannelAsync() {
+        string channelToLeave = "GlobalProximityChat";
         await VivoxService.Instance.LeaveChannelAsync(channelToLeave);
     }
 
@@ -72,4 +103,13 @@ public class Initialize : MonoBehaviour
     {
         Debug.Log($"Participant {participant.DisplayName} removed from channel");
     }
+
+    public async void UpdatePlayerPosition(Vector3 playerPosition)
+    {
+        if (VivoxService.Instance.ActiveChannels.TryGetValue("GlobalProximityChat", out var session))
+        {
+            await session.SetChannelSessionPositionAsync(playerPosition);
+        }
+    }
+
 }
