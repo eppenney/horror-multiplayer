@@ -74,7 +74,7 @@ public class VivoxManager : MonoBehaviour
         await VivoxService.Instance.LeaveChannelAsync(channelToLeave);
     }
 
-    public async void JoinPositionalChannelAsync(GameObject p_playerObject) {
+    public async void JoinPositionalChannelAsync() {
         string channelToJoin = "GlobalProximityChat";
 
         Channel3DProperties properties = new Channel3DProperties(
@@ -86,8 +86,6 @@ public class VivoxManager : MonoBehaviour
         );
 
         await VivoxService.Instance.JoinPositionalChannelAsync(channelToJoin, ChatCapability.TextAndAudio, properties);
-
-        localPlayerObject = p_playerObject;
     }
 
     public async void LeavePositionalChannelAsync() {
@@ -112,11 +110,17 @@ public class VivoxManager : MonoBehaviour
     private void onParticipantAddedToChannel(VivoxParticipant participant)
     {
         Debug.Log($"Participant {participant.DisplayName} added to channel");
+        participant.ParticipantSpeechDetected += onParticipantSpeechDetected;
     }
 
     private void onParticipantRemovedFromChannel(VivoxParticipant participant)
     {
         Debug.Log($"Participant {participant.DisplayName} removed from channel");
+        participant.ParticipantSpeechDetected -= onParticipantSpeechDetected;
+    }
+
+    private void onParticipantSpeechDetected() {
+        Debug.Log($"Someone is speaking!");
     }
 
     /// <summary>
@@ -126,7 +130,7 @@ public class VivoxManager : MonoBehaviour
     /// <param name="playerPosition"></param>
     public async void UpdatePlayerPosition()
     {
-        VivoxService.Instance.Set3DPosition(localPlayerObject, "GlobalProximityChat");
+        if (localPlayerObject != null) VivoxService.Instance.Set3DPosition(localPlayerObject, "GlobalProximityChat");
     }
 
 }
